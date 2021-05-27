@@ -1,90 +1,103 @@
-#include <ros/ros.h>
-#include <turtlebot_controller/ServiceServer.h>
-#include <geometry_msgs/Twist.h>
-#include <sensor_msgs/LaserScan.h>
+#include "ros/ros.h"
+#include "geometry_msgs/Twist.h"
+#include "sensor_msgs/LaserScan.h"
+#include "tf/transform_listener.h"
 
-bool fahren = true;                     //sorgt dafür das durch Starten des Servers der Turtlebot direkt anfängt zu fahren, die Clients geben dann jeweils einen anderen Bool zurück
-float movex;
-float movez;
-double control_gain;
+// C++ Libraries
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <stack>
+
+using namespace std_msgs;
+
+//https://github.com/cohnsted1/TurtleBot--MazeSolver/blob/main/src/new_main.cpp
+
+ros::Publisher motor_command_publisher;
+ros::Subscriber laser_subscriber;
+sensor_msgs::LaserScan laser_msg;
+geometry_msgs::Twist motor_command;
+
+// Define the robot direction of movement
+typedef enum _ROBOT_MOVEMENT {
+    STOP = 0,
+    FORWARD,
+    BACKWARD,
+    TURN_LEFT,
+    TURN_RIGHT,
+    GO_RIGHT,
+    GO_LEFT
+
+} ROBOT_MOVEMENT;
 
 
-bool moven(turtlebot_controller::ServiceServer::Request &req, turtlebot_controller::ServiceServer::Response &res) {
+bool robot_move(const ROBOT_MOVEMENT move_type)
+{
+    if (move_type == STOP) {
+        ROS_INFO("STOP! \n");
 
-    res.moveres = req.movereq;
-    fahren = res.moveres;
-    //ROS_INFO("REQUEST: %d", req.movereq);       zum kontrollieren was der Server gerade als "Status" hat, also was der Turtlebot gerade zu tun hat
-    //ROS_INFO("RESPONSE: %d", res.moveres);
+        motor_command.angular.z = 0.0;
+        motor_command.linear.x = 0.0;
+    }
+
+    else if (move_type == FORWARD) {
+        ROS_INFO("Geradeaus! \n");
+        motor_command.angular.z = 0.0;
+        motor_command.linear.x = 0.17;
+    }
+
+    else if (move_type == BACKWARD) {
+        ROS_INFO("Rückwaerts! \n");
+        motor_command.linear.x = -0.15;
+        motor_command.angular.z = 0.75;
+    }
+
+    else if (move_type == TURN_LEFT) {
+        ROS_INFO("Linksdrehung! \n");
+        motor_command.linear.x = 0.05;
+        motor_command.angular.z = 0.5;
+    }
+
+    else if (move_type == TURN_RIGHT) {
+        ROS_INFO("Rechtsdrehung! \n");
+        motor_command.linear.x = 0.05;
+        motor_command.angular.z = -0.5;
+    }
+    else if (move_type == GO_RIGHT) {
+        ROS_INFO("Rechts! \n");
+        motor_command.linear.x = 0.15;
+        motor_command.angular.z = -0.5;
+    }
+    else if (move_type == GO_LEFT) {
+        ROS_INFO("Links! \n");
+        motor_command.linear.x = 0.15;
+        motor_command.angular.z = 0.5;
+    }
+    else {
+        ROS_INFO("Move type wrong! \n");
+        return false;
+    }
+    motor_command_publisher.publish(motor_command);
+    usleep(10);
+    return true;
+}
+void laserCallback(const sensor_msgs::LaserScan::ConstPtr& scan_msg){
 
 }
 
-void CallbackLaser(const sensor_msgs::LaserScan::ConstPtr &msg) {    //In Zusammenarbeit mit Malte Kretschmann
-    //ROS_INFO("LaserScan (min, max, angle)=(%f,%f)\n", msg->angle_min, msg->angle_max, msg->angle_increment);
-
-    ros::NodeHandle nh1;
-    ros::Publisher pub = nh1.advertise<geometry_msgs::Twist>("/cmd_vel", 1000);
-
-
-    float minimumRange = 3.5;
-    int zaehler = 1;
-    for (float i : msg->ranges) {
-        if (i >= msg->range_min && i <= msg->range_max && i <= minimumRange) {
-            minimumRange = i;
-        } else zaehler += 1;
-
-    }
-
-    float angle = msg->angle_min + zaehler * msg->angle_increment;
-
-
-    if (minimumRange >
-        0.2) {    //In zusammenarbeit mit Florian Eimann       //wenn der Turtlebot noch weit entfernt ist, soll er sich justieren und rantasten bis er eine entfernung von <=0.2 hat
-        if (angle > 6 && angle <
-                         6.29) {                          //in dieser Bedingung wird geschaut bzw. entschieden ob der Turtlebot gerade aus fährt (in der Bedingung True)
-            movex = control_gain;
-            movez = 0;
-        } else {                                                 //wenn in der IF Bedinung false als Wert kam, kommt der Turtlebot in diese Bedinung, die sagt, er solle sich so lange drehen bis er gerade vor dem Pillar steht
-            movex = control_gain;
-            movez = control_gain * (6.29 - angle);
-        }
-    } else {                                                                 //wenn der Turtlebot dicht genug ist, dann soll er sich zu dem Pillar mit der Geschwindigkeit x = 3 auf den Pillar zubewegen und diesen berühren
-        movex = 0;
-        movez = 0;
-    }
-
-}
-
-int main(int argc, char **argv) {
-    std::string scan_topic;
-    int laserscan_queue;
-
-
-    ros::init(argc, argv, "Service_Node");
+int main(int argc, char** argv) {
+    // Initialize a ROS node
+    ros::init(argc, argv, "node");
     ros::NodeHandle n;
-    n.param("turtlebot/queue_size", laserscan_queue, 1);
-    n.param("turtlebot/control_gain", control_gain, 0.5);
-    ros::Publisher geo = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1000);
-    ros::ServiceServer service = n.advertiseService("ServiceServer", moven);
-    ros::Subscriber scan = n.subscribe("/scan", 10, CallbackLaser);
-
-    n.param("turtlebot/control_gain", control_gain, 0.5);
-    geometry_msgs::Twist msg;
-
+    motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    laser_subscriber = n.subscribe("/scan", 1000, laserCallback);
+    ros::Duration time_between_ros_wakeups(0.001);
 
     while (ros::ok()) {
         ros::spinOnce();
-        if (fahren) {
-            msg.linear.x = movex;
-            msg.angular.z = movez;
-            geo.publish(msg);
-            ros::spinOnce();
-
-        } else {
-            msg.linear.x = 0;
-            msg.angular.z = 0;
-            geo.publish(msg);
-            ros::spinOnce();
-        }
+        time_between_ros_wakeups.sleep();
     }
-    //ros::spin();
+
+    return 0;
+
 }

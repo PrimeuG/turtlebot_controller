@@ -61,7 +61,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate services in the 'srv' folder
  add_service_files(
-   FILES
+  FILES
    ServiceServer.srv
  )
 
@@ -74,8 +74,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
-   DEPENDENCIES
-   std_msgs
+  DEPENDENCIES
+  std_msgs
 
  )
 
@@ -109,9 +109,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-          INCLUDE_DIRS include
-          LIBRARIES turtlebot_controller
-          CATKIN_DEPENDS roscpp rospy std_msgs
+       # INCLUDE_DIRS include
+      #   LIBRARIES turtlebot_controller
+      #  CATKIN_DEPENDS roscpp rospy std_msgs
         # DEPENDS system_lib
        # DEPENDS eigen opencv
 )
@@ -123,8 +123,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-         include
-        ${catkin_INCLUDE_DIRS}
+        include
+      ${catkin_INCLUDE_DIRS}
 
 )
 
@@ -215,26 +215,18 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(subscriber src/subscriber.cpp)
-add_executable(SetBool src/SetBool.cpp)
-add_executable(uebung4 src/uebung4.cpp)
-add_executable(distanzClient src/distanzClient.cpp)
-add_executable(Aufgabe2Client src/Aufgabe2Client.cpp)
-add_executable(kollisionsClient src/kollisionsClient.cpp)
+
 add_executable(StartStopServer src/StartStopServer.cpp)
 
+
 #add_dependencies(subscriber nav_msgs_generate_messages_cpp)
-target_link_libraries(subscriber ${catkin_LIBRARIES})
-target_link_libraries(SetBool ${catkin_LIBRARIES})
-target_link_libraries(uebung4 ${catkin_LIBRARIES})
-target_link_libraries(distanzClient ${catkin_LIBRARIES})
-target_link_libraries(Aufgabe2Client ${catkin_LIBRARIES})
-target_link_libraries(kollisionsClient ${catkin_LIBRARIES})
+
 target_link_libraries(StartStopServer ${catkin_LIBRARIES})
+
 #add_dependencies(subscriber turtlebot_controller_gencpp)
-add_dependencies(SetBool turtlebot_controller_gencpp)
-add_dependencies(uebung4 turtlebot_controller_gencpp)
-add_dependencies(distanzClient turtlebot_controller_gencpp)
-add_dependencies(Aufgabe2Client turtlebot_controller_gencpp)
-add_dependencies(kollisionsClient turtlebot_controller_gencpp)
-add_dependencies(StartStopServer turtlebot_controller_gencpp)
+#add_dependencies(SetBool turtlebot_controller_gencpp)
+#add_dependencies(uebung4 turtlebot_controller_gencpp)
+#add_dependencies(distanzClient turtlebot_controller_gencpp)
+#add_dependencies(Aufgabe2Client turtlebot_controller_gencpp)
+#add_dependencies(kollisionsClient turtlebot_controller_gencpp)
+#add_dependencies(StartStopServer turtlebot_controller_gencpp)
