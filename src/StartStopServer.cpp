@@ -107,7 +107,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     averageVorne = summeVorne/21;
     averageLinks = summeLinks/21;
-    averageLinks = summeRechts/21;
+    averageRechts = summeRechts/21;
 
 
 
