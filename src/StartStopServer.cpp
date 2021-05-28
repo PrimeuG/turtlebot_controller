@@ -93,17 +93,25 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     for (int k = 350; k < 360; k++) {
         summeVorne += laser_ranges[k];
-        averageVorne = summeVorne/21.0;
+        if(k = 360){
+            averageVorne = summeVorne/21.0;
+        }
+
     }
 
     for (int z = 80; z < 101; z++) {
         summeLinks += laser_ranges[z];
-        averageLinks = summeLinks/21.0;
+        if(z = 101){
+            averageLinks = summeLinks/21.0;
+        }
+
     }
 
     for (int z = 260; z < 281; z++) {
         summeRechts += laser_ranges[z];
-        averageRechts = summeRechts/21.0;
+        if(z = 281){
+            averageRechts = summeRechts/21.0;
+        }
     }
 
 
