@@ -47,7 +47,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.angular.z = 0.75;
     } else if (move_type == TURN_LEFT) {
         ROS_INFO("Linksdrehung! \n");
-        motor_command.linear.x = 0.05;
+        motor_command.linear.x = 0.00;
         motor_command.angular.z = 0.5;
     } else if (move_type == TURN_RIGHT) {
         ROS_INFO("Rechtsdrehung! \n");
@@ -108,6 +108,20 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     averageVorne = summeVorne/einzweizwanzig;
     averageLinks = summeLinks/einzweizwanzig;
     averageRechts = summeRechts/einzweizwanzig;
+
+    if ( averageRechts > 0.25){
+        robot_move(GO_RIGHT);       //rechts fahren bis zur Wand
+    } else {
+        if (averageVorne > 0.25){
+            robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
+        }
+        else if (averageVorne <= 0.25 && averageLinks > 0.25){
+            robot_move(GO_LEFT);    //da Vorne und Rechts dicht an wand , nach links fahren da Laserwerte keine Wand anzeigen
+        }
+        else if (averageVorne <= 0.25 && averageLinks <= 0.25){
+            robot_move(TURN_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
+        }
+    }
 
 
 
