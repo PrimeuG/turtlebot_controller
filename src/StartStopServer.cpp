@@ -82,6 +82,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float summeLinks;
     float summeRechts;
 
+    float averageVorne;
+    float averageLinks;
+    float averageRechts;
+
 
     for (int z = 0; z < 11; z++) {
         summeVorne += laser_ranges[z];
@@ -89,25 +93,19 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     for (int k = 350; k < 360; k++) {
         summeVorne += laser_ranges[k];
+        averageVorne = summeVorne/21.0;
     }
 
     for (int z = 80; z < 101; z++) {
         summeLinks += laser_ranges[z];
+        averageLinks = summeLinks/21.0;
     }
 
     for (int z = 260; z < 281; z++) {
         summeRechts += laser_ranges[z];
+        averageRechts = summeRechts/21.0;
     }
 
-
-
-    float averageVorne;
-    float averageLinks;
-    float averageRechts;
-    float einzweizwanzig = 21.0;
-    averageVorne = summeVorne/einzweizwanzig;
-    averageLinks = summeLinks/einzweizwanzig;
-    averageRechts = summeRechts/einzweizwanzig;
 
     ROS_INFO("averageRechts: %f", averageRechts);
     ROS_INFO("averageLinks: %f", averageLinks);
