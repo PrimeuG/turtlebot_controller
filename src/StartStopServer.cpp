@@ -104,10 +104,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float averageVorne;
     float averageLinks;
     float averageRechts;
-
-    averageVorne = summeVorne/21;
-    averageLinks = summeLinks/21;
-    averageRechts = summeRechts/21;
+    float einzweizwanzig = 21.0;
+    averageVorne = summeVorne/einzweizwanzig;
+    averageLinks = summeLinks/einzweizwanzig;
+    averageRechts = summeRechts/einzweizwanzig;
 
 
 
