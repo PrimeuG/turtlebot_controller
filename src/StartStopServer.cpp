@@ -40,7 +40,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
     } else if (move_type == FORWARD) {
         ROS_INFO("Geradeaus! \n");
         motor_command.angular.z = 0.0;
-        motor_command.linear.x = 0.17;
+        motor_command.linear.x = 0.05;
     } else if (move_type == BACKWARD) {
         ROS_INFO("Rückwaerts! \n");
         motor_command.linear.x = -0.15;
@@ -48,19 +48,19 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
     } else if (move_type == TURN_LEFT) {
         ROS_INFO("Linksdrehung! \n");
         motor_command.linear.x = 0.00;
-        motor_command.angular.z = 0.5;
+        motor_command.angular.z = 0.05;
     } else if (move_type == TURN_RIGHT) {
         ROS_INFO("Rechtsdrehung! \n");
-        motor_command.linear.x = 0.05;
-        motor_command.angular.z = -0.5;
+        motor_command.linear.x = 0.00;
+        motor_command.angular.z = -0.05;
     } else if (move_type == GO_RIGHT) {
         ROS_INFO("Rechts! \n");
-        motor_command.linear.x = 0.15;
-        motor_command.angular.z = -0.5;
+        motor_command.linear.x = 0.05;
+        motor_command.angular.z = -0.05;
     } else if (move_type == GO_LEFT) {
         ROS_INFO("Links! \n");
-        motor_command.linear.x = 0.15;
-        motor_command.angular.z = 0.5;
+        motor_command.linear.x = 0.0;
+        motor_command.angular.z = 0.05;
     } else {
         ROS_INFO("Move type wrong! \n");
         return false;
@@ -109,10 +109,14 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     averageLinks = summeLinks/einzweizwanzig;
     averageRechts = summeRechts/einzweizwanzig;
 
-    if ( averageRechts > 0.25){
+    ROS_INFO("averageRechts: %f", averageRechts);
+    ROS_INFO("averageLinks: %f", averageLinks);
+    ROS_INFO("averageVorne: %f", averageVorne);
+    if ( averageRechts > 0.35){
         robot_move(GO_RIGHT);       //rechts fahren bis zur Wand
+
     } else {
-        if (averageVorne > 0.25){
+        if (averageVorne > 0.35){
             robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
         }
         else if (averageVorne <= 0.25 && averageLinks > 0.25){
