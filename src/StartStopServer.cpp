@@ -78,15 +78,15 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     size_t range_size = laser_ranges.size();
     float range_min = laser_msg.range_max;
 
-    float summeVorne;
-    float summeLinks;
-    float summeRechts;
-    float summeVorneRechts;
+    float summeVorne = 0.0;
+    float summeLinks = 0.0;
+    float summeRechts = 0.0;
+    float summeVorneRechts = 0.0;
 
-    float averageVorne;
-    float averageLinks;
-    float averageRechts;
-    float averageVorneRechts;
+    float averageVorne= 0.0;
+    float averageLinks= 0.0;
+    float averageRechts= 0.0;
+    float averageVorneRechts= 0.0;
 
 
     for (int z = 0; z < 6; z++) {
@@ -111,7 +111,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     for (int z = 265; z < 276; z++) {
         summeRechts += laser_ranges[z];
-        if (z == 280) {
+        if (z == 275) {
             averageRechts = summeRechts / 11.0;
         }
     }
@@ -120,33 +120,39 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         summeVorneRechts += laser_ranges[z];
         if (z == 320) {
             averageVorneRechts = summeVorneRechts / 11.0;
+
         }
     }
+    if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
+        averageRechts > 3.5) {
+        ROS_INFO("STÖRUNG");
 
-
-    ROS_INFO("averageRechts: %f", averageRechts);
-    ROS_INFO("averageLinks: %f", averageLinks);
-    ROS_INFO("averageVorne: %f", averageVorne);
-
-    if (averageRechts && averageLinks > 0.5 && averageVorne >= 0.3) {
-        robot_move(FORWARD);
-    } else if (averageRechts && averageLinks > 0.5 && averageVorne <= 0.3) {
-        robot_move(TURN_LEFT);
     } else {
-        if (averageRechts > 0.35) {
-            robot_move(GO_RIGHT);       //rechts fahren bis zur Wand
+        ROS_INFO("averageRechts: %f", averageRechts);
+        ROS_INFO("averageLinks: %f", averageLinks);
+        ROS_INFO("averageVorne: %f", averageVorne);
 
+        if (averageRechts && averageLinks > 0.5 && averageVorne >= 0.3) {
+            robot_move(FORWARD);
+        } else if (averageRechts && averageLinks > 0.5 && averageVorne <= 0.3) {
+            robot_move(TURN_LEFT);
         } else {
-            if (averageVorne > 0.35) {
-                robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
-            } else if (averageVorne <= 0.25 && averageLinks > 0.25) {
-                robot_move(
-                        GO_LEFT);    //da Vorne und Rechts dicht an wand , nach links fahren da Laserwerte keine Wand anzeigen
-            } else if (averageVorne <= 0.25 && averageLinks <= 0.25) {
-                robot_move(
-                        TURN_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
+            if (averageRechts > 0.35) {
+                robot_move(GO_RIGHT);       //rechts fahren bis zur Wand
+
+            } else {
+                if (averageVorne > 0.35) {
+                    robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
+                } else if (averageVorne <= 0.25 && averageLinks > 0.25) {
+                    robot_move(
+                            GO_LEFT);    //da Vorne und Rechts dicht an wand , nach links fahren da Laserwerte keine Wand anzeigen
+                } else if (averageVorne <= 0.25 && averageLinks <= 0.25) {
+                    robot_move(
+                            TURN_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
+                }
             }
         }
+
     }
 
 
