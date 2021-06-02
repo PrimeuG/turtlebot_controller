@@ -17,6 +17,7 @@ ros::Publisher motor_command_publisher;
 ros::Subscriber laser_subscriber;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
+static int counter = 0;
 
 // Define the robot direction of movement
 typedef enum _ROBOT_MOVEMENT {
@@ -55,8 +56,8 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.angular.z = -0.05;
     } else if (move_type == GO_RIGHT) {
         ROS_INFO("Rechts! \n");
-        motor_command.linear.x = 0.025;
-        motor_command.angular.z = -0.08;
+        motor_command.linear.x = 0.01;
+        motor_command.angular.z = -0.15;
     } else if (move_type == GO_LEFT) {
         ROS_INFO("Links! \n");
         motor_command.linear.x = 0.0;
@@ -89,6 +90,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float averageVorneRechts= 0.0;
 
 
+
     for (int z = 0; z < 6; z++) {
         summeVorne += laser_ranges[z];
     }
@@ -116,39 +118,50 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
     }
 
-    for (int z = 310; z < 321; z++) {
+    for (int z = 340; z < 346; z++) {
         summeVorneRechts += laser_ranges[z];
-        if (z == 320) {
-            averageVorneRechts = summeVorneRechts / 11.0;
+        if (z == 345) {
+            averageVorneRechts = summeVorneRechts / 6.0;
 
         }
     }
     if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
-        averageRechts > 3.5) {
+        averageRechts > 3.5 || averageVorneRechts <= 0 || averageVorneRechts > 3.5 ) {
         ROS_INFO("STÖRUNG");
 
     } else {
         ROS_INFO("averageRechts: %f", averageRechts);
         ROS_INFO("averageLinks: %f", averageLinks);
         ROS_INFO("averageVorne: %f", averageVorne);
+        ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
+        ros::Rate rate(1);
 
-        if (averageRechts && averageLinks > 0.5 && averageVorne >= 0.3) {
+        if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne >= 0.2 && counter == 0) {
             robot_move(FORWARD);
-        } else if (averageRechts && averageLinks > 0.5 && averageVorne <= 0.3) {
+        } else if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne <= 0.2 && counter == 0) {
             robot_move(TURN_LEFT);
+            rate.sleep();
         } else {
-            if (averageRechts > 0.35) {
-                robot_move(GO_RIGHT);       //rechts fahren bis zur Wand
-
+            if (averageRechts > 0.2) {
+                robot_move(GO_RIGHT);   //rechts fahren bis zur Wand
+                counter = 1;
             } else {
-                if (averageVorne > 0.35) {
+                if (averageVorne > 0.2 ) {
                     robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
-                } else if (averageVorne <= 0.25 && averageLinks > 0.25) {
+                    if (averageVorneRechts < 0.15){
+                        robot_move(GO_LEFT);
+                    }
+                    counter = 1;
+                } else if (averageVorne <= 0.20 && averageLinks > 0.20) {
                     robot_move(
                             GO_LEFT);    //da Vorne und Rechts dicht an wand , nach links fahren da Laserwerte keine Wand anzeigen
-                } else if (averageVorne <= 0.25 && averageLinks <= 0.25) {
+                    counter = 1;
+                } else if (averageVorne <= 0.20 && averageLinks <= 0.20) {
                     robot_move(
-                            TURN_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
+                            GO_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
+                    counter = 1;
+                } else {
+                    ROS_INFO("Was geht hier ab");
                 }
             }
         }
