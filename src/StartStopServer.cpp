@@ -184,7 +184,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         } else {        //ansonsten wird der Wert um 1 erhöht
             counter += 1;
         }
-    }
+    }!
 }*/
 }
 
