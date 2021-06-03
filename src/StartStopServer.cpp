@@ -84,11 +84,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float summeRechts = 0.0;
     float summeVorneRechts = 0.0;
 
-    float averageVorne= 0.0;
-    float averageLinks= 0.0;
-    float averageRechts= 0.0;
-    float averageVorneRechts= 0.0;
-
+    float averageVorne = 0.0;
+    float averageLinks = 0.0;
+    float averageRechts = 0.0;
+    float averageVorneRechts = 0.0;
 
 
     for (int z = 0; z < 6; z++) {
@@ -126,7 +125,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
     }
     if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
-        averageRechts > 3.5 || averageVorneRechts <= 0 || averageVorneRechts > 3.5 ) {
+        averageRechts > 3.5 || averageVorneRechts <= 0 || averageVorneRechts > 3.5) {
         ROS_INFO("STÖRUNG");
 
     } else {
@@ -136,37 +135,67 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
         ros::Rate rate(1);
 
-        if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne >= 0.2 && counter == 0) {
-            robot_move(FORWARD);
-        } else if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne <= 0.2 && counter == 0) {
-            robot_move(TURN_LEFT);
-            rate.sleep();
-        } else {
-            if (averageRechts > 0.2) {
-                robot_move(GO_RIGHT);   //rechts fahren bis zur Wand
-                counter = 1;
-            } else {
-                if (averageVorne > 0.2 ) {
-                    robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
-                    if (averageVorneRechts < 0.15){
-                        robot_move(GO_LEFT);
-                    }
+        if (counter == 0){                  //Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
+            if(averageVorne <= 0.2){            //Turtlebot hat Wand vor sich erreicht
+
+                if(averageLinks <= 0.2){            //Um Wand auf der Rechten Seite des Turtlebots zu haben muss er sich Linksdrehen
+                                                    //180° Linksdrehung, da Wand links vorhanden ist
+                    counter = 1;                    //um in if-Bedingung (counter ==1) zu kommen
+                } else{
+                                                    //90° Linksdrehung
                     counter = 1;
-                } else if (averageVorne <= 0.20 && averageLinks > 0.20) {
-                    robot_move(
-                            GO_LEFT);    //da Vorne und Rechts dicht an wand , nach links fahren da Laserwerte keine Wand anzeigen
-                    counter = 1;
-                } else if (averageVorne <= 0.20 && averageLinks <= 0.20) {
-                    robot_move(
-                            GO_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
-                    counter = 1;
-                } else {
-                    ROS_INFO("Was geht hier ab");
                 }
+            } else{
+                                                //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
             }
+        } else{                             //ab hier an kann der Turtlebot sich orientieren
+           if(averageRechts <= 0.2){            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+               if(averageVorne <= 0.2){             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
+                   if(averageLinks <= 0.2){             //Kommentar aus Zeile 153 + noch eine Wand dicht auf der Linken Seite
+                                                        //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
+                   } else{                              //Links hat der Turtlebot keine Wand
+                                                        //Linksdrehung um 90°
+                   }
+               } else{                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
+
+               }
+           } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
+                                                //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+           }
         }
 
     }
+    /*if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne >= 0.2 && counter == 0) {
+        robot_move(FORWARD);
+    } else if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne <= 0.2 && counter == 0) {
+        robot_move(TURN_LEFT);
+        rate.sleep();
+    } else {
+        if (averageRechts > 0.2) {
+            robot_move(GO_RIGHT);   //rechts fahren bis zur Wand
+            counter = 1;
+        } else {
+            if (averageVorne > 0.2 ) {
+                robot_move(FORWARD);    //da dicht genug an der rechten Wand fahr vorne
+                if (averageVorneRechts < 0.15){
+                    robot_move(GO_LEFT);
+                }
+                counter = 1;
+            } else if (averageVorne <= 0.20 && averageLinks > 0.20) {
+                robot_move(
+                        GO_LEFT);    //da Vorne und Rechts dicht an wand , nach links fahren da Laserwerte keine Wand anzeigen
+                counter = 1;
+            } else if (averageVorne <= 0.20 && averageLinks <= 0.20) {
+                robot_move(
+                        GO_LEFT);  //da Vorne, Rechts und Links Laserwerte anzeigen das Wände sehr dicht sind, umdrehen
+                counter = 1;
+            } else {
+                ROS_INFO("Was geht hier ab");
+            }
+        }
+    }
+
+}*/
 
 
 
@@ -184,8 +213,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         } else {        //ansonsten wird der Wert um 1 erhöht
             counter += 1;
         }
-    }!
-}*/
+    }!*/
 }
 
 
