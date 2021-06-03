@@ -4,6 +4,7 @@
 #include "tf/transform_listener.h"
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
+#include "ros/time.h"
 
 // C++ Libraries
 #include <iostream>
@@ -19,7 +20,9 @@ ros::Publisher motor_command_publisher;
 ros::Subscriber laser_subscriber;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
+
 static int counter = 0;
+
 
 // Define the robot direction of movement
 typedef enum _ROBOT_MOVEMENT {
@@ -37,38 +40,56 @@ typedef enum _ROBOT_MOVEMENT {
 bool robot_move(const ROBOT_MOVEMENT move_type) {
     if (move_type == STOP) {
         ROS_INFO("STOP! \n");
-
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.0;
+        motor_command_publisher.publish(motor_command);
     } else if (move_type == FORWARD) {
         ROS_INFO("Geradeaus! \n");
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.05;
+        motor_command_publisher.publish(motor_command);
     } else if (move_type == BACKWARD) {
         ROS_INFO("Rückwaerts! \n");
         motor_command.linear.x = -0.15;
         motor_command.angular.z = 0.75;
+        motor_command_publisher.publish(motor_command);
     } else if (move_type == TURN_LEFT) {
         ROS_INFO("Linksdrehung! \n");
-        motor_command.linear.x = 0.00;
-        motor_command.angular.z = 0.05;
+        float angular_speed = 1.0;
+        float rate = 50.0;
+        float goal_angle = 3.1415927;
+        //float angular_duration = goal_angle/angular_speed;
+        int ticks = int(goal_angle * rate);
+        for(int i = 0; i<=ticks;i++){
+            ROS_INFO("Ticks: %i", ticks);
+            ROS_INFO("i: %i", i);
+            ROS_INFO("Linksdrehung! \n");
+
+            motor_command.angular.z = angular_speed;
+            motor_command_publisher.publish(motor_command);
+            ros::Duration(0.02, 0).sleep();
+        }
+        motor_command.angular.z = 0.0;
     } else if (move_type == TURN_RIGHT) {
         ROS_INFO("Rechtsdrehung! \n");
         motor_command.linear.x = 0.00;
         motor_command.angular.z = -0.05;
+        motor_command_publisher.publish(motor_command);
     } else if (move_type == GO_RIGHT) {
         ROS_INFO("Rechts! \n");
         motor_command.linear.x = 0.01;
         motor_command.angular.z = -0.15;
+        motor_command_publisher.publish(motor_command);
     } else if (move_type == GO_LEFT) {
         ROS_INFO("Links! \n");
         motor_command.linear.x = 0.0;
         motor_command.angular.z = 0.05;
+        motor_command_publisher.publish(motor_command);
     } else {
         ROS_INFO("Move type wrong! \n");
         return false;
     }
-    motor_command_publisher.publish(motor_command);
+
     usleep(10);
     return true;
 }
@@ -137,6 +158,8 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
         ros::Rate rate(1);
 
+
+
         if (counter == 0){                  //Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
             if(averageVorne <= 0.2){            //Turtlebot hat Wand vor sich erreicht
 
@@ -148,7 +171,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     counter = 1;
                 }
             } else{
-                                                //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
+                                             //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
             }
         } else{                             //ab hier an kann der Turtlebot sich orientieren
            if(averageRechts <= 0.2){            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
@@ -226,7 +249,7 @@ int main(int argc, char **argv) {
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     laser_subscriber = n.subscribe("/scan", 1000, laserCallback);
 
-    ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
+    /*ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
     tf::TransformBroadcaster odom_broadcaster;
 
     double x = 0.0;
@@ -240,15 +263,24 @@ int main(int argc, char **argv) {
     ros::Time current_time, last_time;
     current_time = ros::Time::now();
     last_time = ros::Time::now();
-    ros::Rate r(1.0);
+
+     */
+    ros::Rate r(50.0);
+
+
 
     ros::Duration time_between_ros_wakeups(0.001);
 
 
 
     while (ros::ok()) {
+        geometry_msgs::Twist msg;
+        ros::Time::init();
 
-        current_time = ros::Time::now();
+
+
+
+        /*current_time = ros::Time::now();
 
         //compute odometry in a typical way given the velocities of the robot
         double dt = (current_time - last_time).toSec();
@@ -298,7 +330,7 @@ int main(int argc, char **argv) {
         odom_pub.publish(odom);
 
         last_time = current_time;
-        r.sleep();
+        r.sleep();*/
 
         ros::spinOnce();
         time_between_ros_wakeups.sleep();
