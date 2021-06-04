@@ -27,12 +27,12 @@ static int counter = 0;
 // Define the robot direction of movement
 typedef enum _ROBOT_MOVEMENT {
     STOP = 0,
-    FORWARD,
-    BACKWARD,
-    TURN_LEFT,
-    TURN_RIGHT,
-    GO_RIGHT,
-    GO_LEFT
+    RECHTS_GERADEAUS_KURZ,
+    GERADEAUS_LANG,
+    HUNDERTACHTZIG,
+    NEUNZIG_LINKS,
+    NEUNZIG_RECHTS
+
 
 } ROBOT_MOVEMENT;
 
@@ -44,18 +44,53 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.0;
         motor_command_publisher.publish(motor_command);
-    } else if (move_type == FORWARD) {
-        ROS_INFO("Geradeaus! \n");
+    } else if (move_type == GERADEAUS_LANG) {
+        ROS_INFO("Geradeaus Lang! \n");
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.05;
         motor_command_publisher.publish(motor_command);
-    } else if (move_type == BACKWARD) {
-        ROS_INFO("Rückwaerts! \n");
-        motor_command.linear.x = -0.15;
-        motor_command.angular.z = 0.75;
+    } else if (move_type == RECHTS_GERADEAUS_KURZ) {
+        ROS_INFO("Wenden! \n");
+        float angular_speed = -1.0;
+        float rate = 50.0;
+        float goal_angle = 3.1415927/2.0f;
+        //float angular_duration = goal_angle/angular_speed;
+        int ticks = int(goal_angle * rate);
+        for(int i = 0; i<=ticks;i++){
+            ROS_INFO("Ticks: %i", ticks);
+            ROS_INFO("i: %i", i);
+            ROS_INFO("Linksdrehung! \n");
+
+            motor_command.angular.z = angular_speed;
+            motor_command_publisher.publish(motor_command);
+            ros::Duration(0, 21000000).sleep();
+        }
+        ROS_INFO("Geradeaus Kurz! \n");
+        motor_command.linear.x = 0.05;
+        motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
-    } else if (move_type == TURN_LEFT) {
-        ROS_INFO("Linksdrehung! \n");
+        ros::Duration(0, 21000000).sleep();
+
+    } else if (move_type == HUNDERTACHTZIG) {
+        ROS_INFO("Wenden! \n");
+        float angular_speed = 1.0;
+        float rate = 50.0;
+        float goal_angle = 3.1415927;
+        //float angular_duration = goal_angle/angular_speed;
+        int ticks = int(goal_angle * rate);
+        for(int i = 0; i<=ticks;i++){
+            ROS_INFO("Ticks: %i", ticks);
+            ROS_INFO("i: %i", i);
+            ROS_INFO("Linksdrehung! \n");
+
+            motor_command.angular.z = angular_speed;
+            motor_command_publisher.publish(motor_command);
+            ros::Duration(0, 21000000).sleep();
+        }
+        motor_command.angular.z = 0.0;
+        motor_command_publisher.publish(motor_command);
+    } else if (move_type == NEUNZIG_LINKS) {
+        ROS_INFO("Neunzig Links! \n");
         float angular_speed = 1.0;
         float rate = 50.0;
         float goal_angle = 3.1415927/2.0f;
@@ -70,24 +105,9 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
             motor_command_publisher.publish(motor_command);
             ros::Duration(0, 21000000).sleep();
         }
-        motor_command.angular.z = 0.0;
-        motor_command_publisher.publish(motor_command);
-    } else if (move_type == TURN_RIGHT) {
-        ROS_INFO("Rechtsdrehung! \n");
-        motor_command.linear.x = 0.00;
-        motor_command.angular.z = -0.05;
-        motor_command_publisher.publish(motor_command);
-    } else if (move_type == GO_RIGHT) {
-        ROS_INFO("Rechts! \n");
-        motor_command.linear.x = 0.01;
-        motor_command.angular.z = -0.15;
-        motor_command_publisher.publish(motor_command);
-    } else if (move_type == GO_LEFT) {
-        ROS_INFO("Links! \n");
-        motor_command.linear.x = 0.0;
-        motor_command.angular.z = 0.05;
-        motor_command_publisher.publish(motor_command);
-    } else {
+    } else if (move_type == NEUNZIG_RECHTS) {
+
+    }else {
         ROS_INFO("Move type wrong! \n");
         return false;
     }
@@ -167,28 +187,28 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             if(averageVorne <= 0.2){            //Turtlebot hat Wand vor sich erreicht
 
                 if(averageLinks <= 0.2){            //Um Wand auf der Rechten Seite des Turtlebots zu haben muss er sich Linksdrehen
-                                                    //180° Linksdrehung, da Wand links vorhanden ist
+                    robot_move(HUNDERTACHTZIG);                                //180° Linksdrehung, da Wand links vorhanden ist
                     counter = 1;                    //um in if-Bedingung (counter ==1) zu kommen
                 } else{
-                    robot_move(TURN_LEFT);          //90° Linksdrehung
+                    robot_move(NEUNZIG_LINKS);          //90° Linksdrehung
                     counter = 1;
                 }
             } else{
-                                             //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
+                robot_move(GERADEAUS_LANG);                              //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
             }
         } else{                             //ab hier an kann der Turtlebot sich orientieren
            if(averageRechts <= 0.2){            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
                if(averageVorne <= 0.2){             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
                    if(averageLinks <= 0.2){             //Kommentar aus Zeile 153 + noch eine Wand dicht auf der Linken Seite
-                                                        //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
+                       robot_move(HUNDERTACHTZIG);                                    //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
                    } else{                              //Links hat der Turtlebot keine Wand
-                                                        //Linksdrehung um 90°
+                       robot_move(NEUNZIG_LINKS);                                 //Linksdrehung um 90°
                    }
                } else{                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
-
+                   robot_move(GERADEAUS_LANG);
                }
            } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
-                                                //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+               robot_move(RECHTS_GERADEAUS_KURZ);                                   //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
            }
         }
 
