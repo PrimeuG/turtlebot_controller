@@ -37,6 +37,7 @@ typedef enum _ROBOT_MOVEMENT {
 } ROBOT_MOVEMENT;
 
 
+
 bool robot_move(const ROBOT_MOVEMENT move_type) {
     if (move_type == STOP) {
         ROS_INFO("STOP! \n");
@@ -57,7 +58,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ROS_INFO("Linksdrehung! \n");
         float angular_speed = 1.0;
         float rate = 50.0;
-        float goal_angle = 3.1415927;
+        float goal_angle = 3.1415927/2.0f;
         //float angular_duration = goal_angle/angular_speed;
         int ticks = int(goal_angle * rate);
         for(int i = 0; i<=ticks;i++){
@@ -67,9 +68,10 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0.02, 0).sleep();
+            ros::Duration(0, 21000000).sleep();
         }
         motor_command.angular.z = 0.0;
+        motor_command_publisher.publish(motor_command);
     } else if (move_type == TURN_RIGHT) {
         ROS_INFO("Rechtsdrehung! \n");
         motor_command.linear.x = 0.00;
@@ -140,6 +142,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
     }
 
+
     for (int z = 340; z < 346; z++) {
         summeVorneRechts += laser_ranges[z];
         if (z == 345) {
@@ -167,7 +170,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                                                     //180° Linksdrehung, da Wand links vorhanden ist
                     counter = 1;                    //um in if-Bedingung (counter ==1) zu kommen
                 } else{
-                                                    //90° Linksdrehung
+                    robot_move(TURN_LEFT);          //90° Linksdrehung
                     counter = 1;
                 }
             } else{
