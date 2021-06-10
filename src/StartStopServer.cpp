@@ -65,7 +65,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 42000000).sleep();
+            ros::Duration(0, 21000000).sleep();
         }
         ROS_INFO("Geradeaus Kurz! \n");
         motor_command.linear.x = 0.05;
@@ -89,7 +89,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 42000000).sleep();
+            ros::Duration(0, 21000000).sleep();
         }
         motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
@@ -109,7 +109,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 42000000).sleep();
+            ros::Duration(0, 21000000).sleep();
         }
     } else if (move_type == NEUNZIG_RECHTS) {
 
