@@ -22,6 +22,7 @@ sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
 
 static int counter = 0;
+float posiZ = 0.0;
 
 
 // Define the robot direction of movement
@@ -102,7 +103,12 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         int ticks = int(goal_angle * rate);
         motor_command.linear.x = 0.0;
         motor_command_publisher.publish(motor_command);
-        for(int i = 0; i<=ticks;i++){
+
+        if(posiZ<1){
+            motor_command.angular.z = angular_speed;
+            motor_command_publisher.publish(motor_command);
+        }
+        /*for(int i = 0; i<=ticks;i++){
             ROS_INFO("Ticks: %i", ticks);
             ROS_INFO("i: %i", i);
             ROS_INFO("Links! \n");
@@ -110,7 +116,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
             ros::Duration(0, 42000000).sleep();
-        }
+        }*/
     } else if (move_type == NEUNZIG_RECHTS) {
 
         ROS_INFO("Neunzig Rechts! \n");
@@ -287,7 +293,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     }!*/
 }
 
-/*void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
+void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
     float rechneryy = 0;
     float rechnerxx = 0;
     float previousX = 0;
@@ -298,8 +304,8 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
       ROS_INFO("Seq: [%d]", msg->header.seq); //Ausgaben der Odometriedaten
       //ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x, msg->pose.pose.position.y,
      //          msg->pose.pose.position.z);
-      ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x,
-               msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
+      /*ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x,
+               msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);*/
     //  ROS_INFO("Vel-> Linear: [%f], Angular: [%f]", msg->twist.twist.linear.x, msg->twist.twist.angular.z);
 
     if (counter == 0) { //setzen des 1. Y und X Wertes
@@ -322,10 +328,15 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     previousy = (msg->pose.pose.position.y);
 
 
-    weg = sqrt(pow((previousX - rechnerxx), 2) +
-               pow((previousy - rechneryy), 2)); //Formel zum berechnen der Entfernung zwischen 2 Punkten
+    float posiZ = 0.0;
+    ROS_INFO("Z %f", msg->pose.pose.position.z);
+    posiZ = msg->pose.pose.orientation.z;
 
-}*/
+
+    /*weg = sqrt(pow((previousX - rechnerxx), 2) +
+               pow((previousy - rechneryy), 2)); //Formel zum berechnen der Entfernung zwischen 2 Punkten*/
+
+}
 
 
 int main(int argc, char **argv) {
@@ -334,7 +345,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     laser_subscriber = n.subscribe("/scan", 1000, laserCallback);
-    //ros::Subscriber odom = n.subscribe("/odom", 1000, odomCallback);
+    ros::Subscriber odom = n.subscribe("/odom", 1000, odomCallback);
 
     /*ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
     tf::TransformBroadcaster odom_broadcaster;
