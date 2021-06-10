@@ -51,7 +51,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command_publisher.publish(motor_command);
     } else if (move_type == RECHTS_GERADEAUS_KURZ) {
         ROS_INFO("Wenden! \n");
-        float angular_speed = -1.0;
+        float angular_speed = -0.5;
         float rate = 50.0;
         float goal_angle = 3.1415927/2.0f;
         //float angular_duration = goal_angle/angular_speed;
@@ -63,7 +63,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 21000000).sleep();
+            ros::Duration(0, 42000000).sleep();
         }
         ROS_INFO("Geradeaus Kurz! \n");
         motor_command.linear.x = 0.05;
@@ -73,7 +73,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == HUNDERTACHTZIG) {
         ROS_INFO("Wenden! \n");
-        float angular_speed = 1.0;
+        float angular_speed = 0.5;
         float rate = 50.0;
         float goal_angle = 3.1415927;
         //float angular_duration = goal_angle/angular_speed;
@@ -85,13 +85,13 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 21000000).sleep();
+            ros::Duration(0, 42000000).sleep();
         }
         motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
     } else if (move_type == NEUNZIG_LINKS) {
         ROS_INFO("Neunzig Links! \n");
-        float angular_speed = 1.0;
+        float angular_speed = 0.5;
         float rate = 50.0;
         float goal_angle = 3.1415927/2.0f;
         //float angular_duration = goal_angle/angular_speed;
@@ -103,7 +103,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 21000000).sleep();
+            ros::Duration(0, 42000000).sleep();
         }
     } else if (move_type == NEUNZIG_RECHTS) {
 
@@ -264,6 +264,46 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     }!*/
 }
 
+void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
+    float rechneryy = 0;
+    float rechnerxx = 0;
+    float previousX = 0;
+    float previousy = 0;
+    float weg = 0;
+
+
+      ROS_INFO("Seq: [%d]", msg->header.seq); //Ausgaben der Odometriedaten
+      //ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x, msg->pose.pose.position.y,
+     //          msg->pose.pose.position.z);
+      ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x,
+               msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
+    //  ROS_INFO("Vel-> Linear: [%f], Angular: [%f]", msg->twist.twist.linear.x, msg->twist.twist.angular.z);
+
+    if (counter == 0) { //setzen des 1. Y und X Wertes
+
+        rechneryy = (msg->pose.pose.position.y);
+
+    }
+    if (counter == 0) {
+
+        rechnerxx = (msg->pose.pose.position.x);
+    }
+
+
+    counter++;
+
+
+    previousX = (msg->pose.pose.position.x); //setzen der aktuellen X und Y Positionen
+
+
+    previousy = (msg->pose.pose.position.y);
+
+
+    weg = sqrt(pow((previousX - rechnerxx), 2) +
+               pow((previousy - rechneryy), 2)); //Formel zum berechnen der Entfernung zwischen 2 Punkten
+
+}
+
 
 int main(int argc, char **argv) {
     // Initialize a ROS node
@@ -271,6 +311,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     laser_subscriber = n.subscribe("/scan", 1000, laserCallback);
+    ros::Subscriber odom = n.subscribe("/odom", 1000, odomCallback);
 
     /*ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
     tf::TransformBroadcaster odom_broadcaster;
