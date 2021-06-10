@@ -81,7 +81,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         for(int i = 0; i<=ticks;i++){
             ROS_INFO("Ticks: %i", ticks);
             ROS_INFO("i: %i", i);
-            ROS_INFO("Linksdrehung! \n");
+            ROS_INFO("Wenden! \n");
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
@@ -99,7 +99,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         for(int i = 0; i<=ticks;i++){
             ROS_INFO("Ticks: %i", ticks);
             ROS_INFO("i: %i", i);
-            ROS_INFO("Linksdrehung! \n");
+            ROS_INFO("Links! \n");
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
