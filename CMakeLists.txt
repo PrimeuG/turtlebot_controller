@@ -218,11 +218,13 @@ include_directories(
 # catkin_add_nosetests(test)
 
 add_executable(StartStopServer src/StartStopServer.cpp)
+add_executable(odomtest src/odomtest.cpp)
 
 
 #add_dependencies(subscriber nav_msgs_generate_messages_cpp)
 
 target_link_libraries(StartStopServer ${catkin_LIBRARIES})
+target_link_libraries(odomtest ${catkin_LIBRARIES})
 
 #add_dependencies(subscriber turtlebot_controller_gencpp)
 #add_dependencies(SetBool turtlebot_controller_gencpp)
