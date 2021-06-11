@@ -5,13 +5,15 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include "ros/time.h"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/LinearMath/Matrix3x3.h"
 
 // C++ Libraries
 #include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <stack>
-
+#define RAD2DEG 57.295779513
 using namespace std_msgs;
 
 //https://github.com/cohnsted1/TurtleBot--MazeSolver/blob/main/src/new_main.cpp
@@ -300,47 +302,30 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 }
 
 void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
-    float rechneryy = 0;
-    float rechnerxx = 0;
-    float previousX = 0;
-    float previousy = 0;
-    float weg = 0;
+    // Camera position in map frame
+    double tx = msg->pose.pose.position.x;
+    double ty = msg->pose.pose.position.y;
+    double tz = msg->pose.pose.position.z;
 
+    // Orientation quaternion
+    tf2::Quaternion q(
+            msg->pose.pose.orientation.x,
+            msg->pose.pose.orientation.y,
+            msg->pose.pose.orientation.z,
+            msg->pose.pose.orientation.w);
 
-     // ROS_INFO("Seq: [%d]", msg->header.seq); //Ausgaben der Odometriedaten
-      //ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x, msg->pose.pose.position.y,
-     //          msg->pose.pose.position.z);
-      /*ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x,
-               msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);*/
-    //  ROS_INFO("Vel-> Linear: [%f], Angular: [%f]", msg->twist.twist.linear.x, msg->twist.twist.angular.z);
+    // 3x3 Rotation matrix from quaternion
+    tf2::Matrix3x3 m(q);
 
-    if (counter == 0) { //setzen des 1. Y und X Wertes
+    // Roll Pitch and Yaw from rotation matrix
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
 
-        rechneryy = (msg->pose.pose.position.y);
-
-    }
-    if (counter == 0) {
-
-        rechnerxx = (msg->pose.pose.position.x);
-    }
-
-
-    //counter++;
-
-
-    previousX = (msg->pose.pose.position.x); //setzen der aktuellen X und Y Positionen
-
-
-    previousy = (msg->pose.pose.position.y);
-
-
-    float posiZ = 0.0;
-    ROS_INFO("Z %f", msg->pose.pose.orientation.z);
-    posiZ = msg->pose.pose.orientation.z;
-
-
-    /*weg = sqrt(pow((previousX - rechnerxx), 2) +
-               pow((previousy - rechneryy), 2)); //Formel zum berechnen der Entfernung zwischen 2 Punkten*/
+    // Output the measure
+    ROS_INFO("Received odom in '%s' frame : X: %.2f Y: %.2f Z: %.2f - R: %.2f P: %.2f Y: %.2f",
+             msg->header.frame_id.c_str(),
+             tx, ty, tz,
+             roll * RAD2DEG, pitch * RAD2DEG, yaw * RAD2DEG);
 
 }
 
