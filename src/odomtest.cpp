@@ -17,7 +17,7 @@
 /**
  * Subscriber callbacks
  */
-//test
+//tes
 
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
 
@@ -84,15 +84,13 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
     // Topic subscribers
-    ros::Subscriber subOdom    = n.subscribe("/zed/zed_node/odom", 10, odomCallback);
-    ros::Subscriber subPose    = n.subscribe("/zed/zed_node/pose", 10, poseCallback);
+    ros::Subscriber subOdom    = n.subscribe("/odom", 10, odomCallback);
+    ros::Subscriber subPose    = n.subscribe("/pose", 10, poseCallback);
 
     // Node execution
 
 
-    while(true){
-        ros::spinOnce();
-    }
+   ros::spin();
 
     return 0;
 }
