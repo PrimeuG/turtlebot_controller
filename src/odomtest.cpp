@@ -85,8 +85,8 @@ int main(int argc, char** argv) {
 
     // Topic subscribers
     ros::Subscriber subOdom    = n.subscribe("/odom", 10, odomCallback);
-    ros::Subscriber subPose    = n.subscribe("/pose", 10, poseCallback);
-
+    //ros::Subscriber subPose    = n.subscribe("/pose", 10, poseCallback);
+    ros::spinOnce();
     // Node execution
 
 

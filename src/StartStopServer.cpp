@@ -18,6 +18,7 @@ using namespace std_msgs;
 
 ros::Publisher motor_command_publisher;
 ros::Subscriber laser_subscriber;
+ros::Subscriber odom_subscriber;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
 
@@ -51,7 +52,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.linear.x = 0.05;
         motor_command_publisher.publish(motor_command);
     } else if (move_type == RECHTS_GERADEAUS_KURZ) {
-        ROS_INFO("Wenden! \n");
+        ROS_INFO("RECHTS_GERADEAUS_KURZ! \n");
         float angular_speed = -0.5;
         float rate = 50.0;
         float goal_angle = 3.1415927/2.0f;
@@ -62,13 +63,13 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         for(int i = 0; i<=ticks;i++){
             ROS_INFO("Ticks: %i", ticks);
             ROS_INFO("i: %i", i);
-            ROS_INFO("Linksdrehung! \n");
+            ROS_INFO("RECHTS_GERADEAUS_KURZ! \n");
 
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
             ros::Duration(0, 42000000).sleep();
         }
-        ROS_INFO("Geradeaus Kurz! \n");
+        ROS_INFO("RECHTS_GERADEAUS_KURZ! \n");
         motor_command.linear.x = 0.05;
         motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
@@ -104,10 +105,13 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.linear.x = 0.0;
         motor_command_publisher.publish(motor_command);
 
-        if(posiZ<1){
+        while(posiZ<3.14){
+            ros::spinOnce();
             motor_command.angular.z = angular_speed;
             motor_command_publisher.publish(motor_command);
         }
+        int k = 0;
+        ROS_INFO("K= %i", k);
         /*for(int i = 0; i<=ticks;i++){
             ROS_INFO("Ticks: %i", ticks);
             ROS_INFO("i: %i", i);
@@ -210,9 +214,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
         ros::Rate rate(1);
 
+        ROS_INFO("Counter: %i", counter);
 
-
-        if (counter == 0){                  //Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
+        if (counter == 0){//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
+            ros::spinOnce();
             if(averageVorne <= 0.2){            //Turtlebot hat Wand vor sich erreicht
 
                 if(averageLinks <= 0.2){            //Um Wand auf der Rechten Seite des Turtlebots zu haben muss er sich Linksdrehen
@@ -226,6 +231,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 robot_move(GERADEAUS_LANG);                              //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
             }
         } else{                             //ab hier an kann der Turtlebot sich orientieren
+            ros::spinOnce();
            if(averageRechts <= 0.2){            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
                if(averageVorne <= 0.2){             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
                    if(averageLinks <= 0.2){             //Kommentar aus Zeile 153 + noch eine Wand dicht auf der Linken Seite
@@ -301,7 +307,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
     float weg = 0;
 
 
-      ROS_INFO("Seq: [%d]", msg->header.seq); //Ausgaben der Odometriedaten
+     // ROS_INFO("Seq: [%d]", msg->header.seq); //Ausgaben der Odometriedaten
       //ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x, msg->pose.pose.position.y,
      //          msg->pose.pose.position.z);
       /*ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x,
@@ -319,7 +325,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
     }
 
 
-    counter++;
+    //counter++;
 
 
     previousX = (msg->pose.pose.position.x); //setzen der aktuellen X und Y Positionen
@@ -329,7 +335,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
 
 
     float posiZ = 0.0;
-    ROS_INFO("Z %f", msg->pose.pose.position.z);
+    ROS_INFO("Z %f", msg->pose.pose.orientation.z);
     posiZ = msg->pose.pose.orientation.z;
 
 
@@ -344,8 +350,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "node");
     ros::NodeHandle n;
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    odom_subscriber = n.subscribe("/odom", 1000, odomCallback);
     laser_subscriber = n.subscribe("/scan", 1000, laserCallback);
-    ros::Subscriber odom = n.subscribe("/odom", 1000, odomCallback);
 
     /*ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
     tf::TransformBroadcaster odom_broadcaster;
