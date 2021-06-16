@@ -232,6 +232,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     }
                     Richtungsgeber = 180;
                     test37 = 0;
+
                     ros::spinOnce();
                     break;
                 case 90:
@@ -286,14 +287,9 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             for(int y = 0; y < 20; y++){
                 ROS_INFO("SWITCH CHECKPOINT 1");
             }
-            switch (faelle) {
-
-                case 1:
+            if (faelle == 1) {
 
                     switch (Richtungsgeber) {
-                        for(int y = 0; y < 20; y++){
-                            ROS_INFO("SWITCH CHECKPOINT 2");
-                        }
 
                         case 0:
                             while (WirdUmgenannt > -90.0) {
@@ -334,18 +330,21 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                             break;
                     }
 
-                case 2:
-                    robot_move(GERADEAUS_MITTEL);
-                    faelle = 0;
-                    test37 = 0;
-                    for(int y = 0; y < 20; y++){
-                        ROS_INFO("SWITCH CHECKPOINT 3");
-                    }
-                    ros::spinOnce();
-                    break;
+            }else if(faelle == 2){
+                robot_move(GERADEAUS_MITTEL);
+                faelle = 0;
+                test37 = 0;
+
+                for(int y = 0; y < 20; y++){
+                    ROS_INFO("SWITCH CHECKPOINT 3");
+                }
+                ros::spinOnce();
+
+                }
 
 
-            }}
+
+            }
             if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
                 ros::spinOnce();
                 if (averageVorne <= 0.2) {            //Turtlebot hat Wand vor sich erreicht
