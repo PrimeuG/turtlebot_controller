@@ -222,6 +222,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         case 0:
                             while (WirdUmgenannt < 90.0) {
                                 robot_move(NEUNZIG_LINKS);
+                                ros::spinOnce();
                             }
                             Richtungsgeber = 90;
                             break;
@@ -298,10 +299,15 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         ROS_INFO("Erste Switch");
                         switch (Richtungsgeber) {
                             case 0:
-                                while (WirdUmgenannt < 180.0) {
+                                ROS_INFO("HALLO: %f", WirdUmgenannt);
+                                if (WirdUmgenannt < 180.0) {
                                     robot_move(NEUNZIG_LINKS);
                                 }
-                                Richtungsgeber = 180;
+
+                                if(WirdUmgenannt>180.0){
+                                    Richtungsgeber = 180;
+                                }
+                                ros::spinOnce();
                                 break;
                             case 90:
                                 while (WirdUmgenannt <= 180.0) {
@@ -343,11 +349,16 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         ROS_INFO("zweite Switch");
                         switch (Richtungsgeber) {
                             case 0:
-                                while (WirdUmgenannt < 90.0) {
-                                    robot_move(NEUNZIG_LINKS);
 
+                                ROS_INFO("HALLO: %f", WirdUmgenannt);
+                                if (WirdUmgenannt < 90.0) {
+                                    robot_move(NEUNZIG_LINKS);
                                 }
-                                Richtungsgeber = 90;
+
+                                if(WirdUmgenannt>90.0){
+                                    Richtungsgeber = 90;
+                                }
+                                ros::spinOnce();
                                 break;
                             case 90:
                                 while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
