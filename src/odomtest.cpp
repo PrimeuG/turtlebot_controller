@@ -31,7 +31,7 @@ static float averageVorne = 0.0;
 static float averageLinks = 0.0;
 static float averageRechts = 0.0;
 static float averageVorneRechts = 0.0;
-
+static int faelle = 0;
 static int test37 = 0;
 
 
@@ -477,8 +477,18 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     //}
                 }
             } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
-                robot_move(
-                        GERADEAUS_KURZ);                                   //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                switch (faelle){
+
+                    case 0:
+                        robot_move(GERADEAUS_KURZ);
+                        faelle = 1;
+                    case 1:
+
+                    case 2:
+                        robot_move(GERADEAUS_MITTEL);
+                        faelle = 0;
+                        break;
+                }                                  //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
             }
         }
 
