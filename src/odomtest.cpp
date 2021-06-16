@@ -85,7 +85,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ros::Duration(0, 10000000).sleep(); //Doppelt mal so lang wie das andere davor
     } else if (move_type == NEUNZIG_LINKS) {
 
-        ROS_INFO("Neunzig Links! \n");
+        //ROS_INFO("Neunzig Links! \n");
         motor_command.linear.x = 0.0;
         motor_command.angular.z = 0.1;
         motor_command_publisher.publish(motor_command);
@@ -279,11 +279,20 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
 
         if (test37 == 3) {
+
+
+            for(int y = 0; y < 20; y++){
+                ROS_INFO("SWITCH CHECKPOINT 1");
+            }
             switch (faelle) {
 
                 case 1:
 
                     switch (Richtungsgeber) {
+                        for(int y = 0; y < 20; y++){
+                            ROS_INFO("SWITCH CHECKPOINT 2");
+                        }
+
                         case 0:
                             ROS_INFO("HALLO: %f", WirdUmgenannt);
                             while (WirdUmgenannt > -90.0) {
@@ -328,6 +337,9 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     robot_move(GERADEAUS_MITTEL);
                     faelle = 0;
                     test37 = 0;
+                    for(int y = 0; y < 20; y++){
+                        ROS_INFO("SWITCH CHECKPOINT 3");
+                    }
                     ros::spinOnce();
                     break;
 
