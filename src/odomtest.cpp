@@ -38,9 +38,9 @@ static int test37 = 0;
 // Define the robot direction of movement
 typedef enum _ROBOT_MOVEMENT {
     STOP = 0,
-    RECHTS_GERADEAUS_KURZ,
+    GERADEAUS_KURZ,
     GERADEAUS_LANG,
-    HUNDERTACHTZIG,
+    GERADEAUS_MITTEL,
     NEUNZIG_LINKS,
     NEUNZIG_RECHTS
 
@@ -60,88 +60,42 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.05;
         motor_command_publisher.publish(motor_command);
-    } else if (move_type == RECHTS_GERADEAUS_KURZ) {
-        ROS_INFO("RECHTS_GERADEAUS_KURZ! \n");
-        float angular_speed = -0.5;
-        float rate = 50.0;
-        float goal_angle = 3.1415927 / 2.0f;
-        //float angular_duration = goal_angle/angular_speed;
-        int ticks = int(goal_angle * rate);
-        motor_command.linear.x = 0.0;
-        motor_command_publisher.publish(motor_command);
-        for (int i = 0; i <= ticks; i++) {
-            ROS_INFO("Ticks: %i", ticks);
-            ROS_INFO("i: %i", i);
-            ROS_INFO("RECHTS_GERADEAUS_KURZ! \n");
+    } else if (move_type == GERADEAUS_KURZ) {
+        ROS_INFO("GERADEAUS_KURZ! \n");
 
-            motor_command.angular.z = angular_speed;
-            motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 42000000).sleep();
-        }
-        ROS_INFO("RECHTS_GERADEAUS_KURZ! \n");
-        motor_command.linear.x = 0.05;
+        //float angular_duration = goal_angle/angular_speed;
         motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 21000000).sleep();
 
-    } /*else if (move_type == HUNDERTACHTZIG) {
-        ROS_INFO("Wenden! \n");
-        float angular_speed = 0.5;
-        float rate = 50.0;
-        float goal_angle = 3.1415927;
-        //float angular_duration = goal_angle/angular_speed;
-        int ticks = int(goal_angle * rate);
-        motor_command.linear.x = 0.0;
+        ROS_INFO("GERADEAUS_KURZ! \n");
+        motor_command.linear.x = 0.1;
         motor_command_publisher.publish(motor_command);
-        for(int i = 0; i<=ticks;i++){
-            ROS_INFO("Ticks: %i", ticks);
-            ROS_INFO("i: %i", i);
-            ROS_INFO("Wenden! \n");
+        ros::Duration(0, 20000000).sleep();
 
-            motor_command.angular.z = angular_speed;
-            motor_command_publisher.publish(motor_command);
-            ros::Duration(0, 42000000).sleep();
-        }
+    } else if (move_type == GERADEAUS_MITTEL) {
+        ROS_INFO("GERADEAUS_MITTEL! \n");
+
+        //float angular_duration = goal_angle/angular_speed;
         motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
-    }*/ else if (move_type == NEUNZIG_LINKS) {
+
+        ROS_INFO("GERADEAUS_MITTEL! \n");
+        motor_command.linear.x = 0.1;
+        motor_command_publisher.publish(motor_command);
+        ros::Duration(0, 40000000).sleep(); //Doppelt mal so lang wie das andere davor
+    } else if (move_type == NEUNZIG_LINKS) {
 
         ROS_INFO("Neunzig Links! \n");
         motor_command.linear.x = 0.0;
-
         motor_command.angular.z = 0.1;
         motor_command_publisher.publish(motor_command);
-    } /*else if (move_type == NEUNZIG_RECHTS) {
+    } else if (move_type == NEUNZIG_RECHTS) {
 
         ROS_INFO("Neunzig Rechts! \n");
-        float angular_speed = -0.5;
-        float rate = 50.0;
-        float goal_angle = 3.1415927 / 2.0f;
-//float angular_duration = goal_angle/angular_speed;
-        int ticks = int(goal_angle * rate);
-        motor_command.linear.
-                x = 0.0;
-        motor_command_publisher.
-                publish(motor_command);
-        for (
-                int i = 0;
-                i <=
-                ticks;
-                i++) {
-            ROS_INFO("Ticks: %i", ticks);
-            ROS_INFO("i: %i", i);
-            ROS_INFO("Links! \n");
-
-            motor_command.angular.
-                    z = angular_speed;
-            motor_command_publisher.
-                    publish(motor_command);
-            ros::Duration(0, 42000000).
-
-                    sleep();
-
-        }
-    }*/ else {
+        motor_command.linear.x = 0.0;
+        motor_command.angular.z = -0.1;
+        motor_command_publisher.publish(motor_command);
+    } else {
         ROS_INFO("Move type wrong! \n");
         return false;
     }
@@ -524,7 +478,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 }
             } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
                 robot_move(
-                        RECHTS_GERADEAUS_KURZ);                                   //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                        GERADEAUS_KURZ);                                   //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
             }
         }
 
