@@ -276,276 +276,333 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     ros::spinOnce();
                     break;
             }
-
-
         }
-        if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
-            ros::spinOnce();
-            if (averageVorne <= 0.2) {            //Turtlebot hat Wand vor sich erreicht
 
-                if (averageLinks <=
-                    0.2) {            //Um Wand auf der Rechten Seite des Turtlebots zu haben muss er sich Linksdrehen
+        if (test37 == 3) {
+            switch (faelle) {
+
+                case 1:
+
                     switch (Richtungsgeber) {
                         case 0:
-                            while (WirdUmgenannt < 90.0) {
-                                robot_move(NEUNZIG_LINKS);
-                                test37 = 1;
+                            ROS_INFO("HALLO: %f", WirdUmgenannt);
+                            while (WirdUmgenannt > -90.0) {
+                                robot_move(NEUNZIG_RECHTS);
                                 ros::spinOnce();
                             }
-                            Richtungsgeber = 90;
+                            faelle = 2;
+                            Richtungsgeber = -90;
+                            ros::spinOnce();
                             break;
                         case 90:
-                            while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
-                                robot_move(NEUNZIG_LINKS);
+                            while (WirdUmgenannt > 0) {
+                                robot_move(NEUNZIG_RECHTS);
+                                ros::spinOnce();
                             }
-                            Richtungsgeber = 180;
+                            faelle = 2;
+                            Richtungsgeber = 0;
+                            ros::spinOnce();
                             break;
                         case 180:
-                            if (WirdUmgenannt > 0.0) {
-                                while (WirdUmgenannt > 0.0) {
-                                    robot_move(NEUNZIG_LINKS);
-                                }
+
+                            while (WirdUmgenannt > 90) {
+                                robot_move(NEUNZIG_RECHTS);
+                                ros::spinOnce();
                             }
-                            while (WirdUmgenannt < -90.0) {
-                                robot_move(NEUNZIG_LINKS);
-                            }
-                            Richtungsgeber = -90;
-                            break;
-                        case -90:
-                            while (WirdUmgenannt < 0) {
-                                robot_move(NEUNZIG_LINKS);
-                            }
-                            Richtungsgeber = 0;
-                            break;
-                    }                               //180° Linksdrehung, da Wand links vorhanden ist
-                    counter = 1;                    //um in if-Bedingung (counter ==1) zu kommen
-                } else {
-                    switch (Richtungsgeber) {
-                        case 0:
-                            while (WirdUmgenannt < 90.0) {
-                                robot_move(NEUNZIG_LINKS);
-                            }
+                            faelle = 2;
                             Richtungsgeber = 90;
-                            break;
-                        case 90:
-                            while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
-                                robot_move(NEUNZIG_LINKS);
-                            }
-                            Richtungsgeber = 180;
-                            break;
-                        case 180:
-                            if (WirdUmgenannt > 0.0) {
-                                while (WirdUmgenannt > 0.0) {
-                                    robot_move(NEUNZIG_LINKS);
-                                }
-                            }
-                            while (WirdUmgenannt < -90.0) {
-                                robot_move(NEUNZIG_LINKS);
-                            }
-                            Richtungsgeber = -90;
+                            ros::spinOnce();
                             break;
                         case -90:
-                            while (WirdUmgenannt < 0) {
-                                robot_move(NEUNZIG_LINKS);
+                            while (WirdUmgenannt > -179 && WirdUmgenannt < 1) {
+                                robot_move(NEUNZIG_RECHTS);
+                                ros::spinOnce();
                             }
-                            Richtungsgeber = 0;
+                            faelle = 2;
+                            Richtungsgeber = 180;
+                            ros::spinOnce();
                             break;
-                    }                       //90° Linksdrehung
-                    counter = 1;
-                }
-            } else {
-                robot_move(
-                        GERADEAUS_LANG);                              //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
+                    }
+
+                case 2:
+                    robot_move(GERADEAUS_MITTEL);
+                    faelle = 0;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+
+
             }
-        } else {                             //ab hier an kann der Turtlebot sich orientieren
-            if (averageRechts <=
-                0.25) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
-                if (averageVorne <=
-                    0.2) {             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
+            if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
+                ros::spinOnce();
+                if (averageVorne <= 0.2) {            //Turtlebot hat Wand vor sich erreicht
+
                     if (averageLinks <=
-                        0.25) {             //Kommentar aus Zeile 153 + noch eine Wand dicht auf der Linken Seite
-                        ROS_INFO("Erste Switch");
+                        0.2) {            //Um Wand auf der Rechten Seite des Turtlebots zu haben muss er sich Linksdrehen
                         switch (Richtungsgeber) {
                             case 0:
-                                ROS_INFO("HALLO: %f", WirdUmgenannt);
-                                test37 = 2;
-                                if (WirdUmgenannt < 180.0) {
-                                    robot_move(NEUNZIG_LINKS);
-
-                                }
-
-                                if (WirdUmgenannt > 180.0) {
-                                    Richtungsgeber = 180;
-
-                                }
-                                ros::spinOnce();
-                                break;
-                            case 90:
-                                test37 = 2;
-                                while (WirdUmgenannt <= 180.0) {
-                                    robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
-
-                                }
-                                while (WirdUmgenannt < -90.0) {
-                                    robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
-
-                                }
-                                Richtungsgeber = -90.0;
-                                break;
-                            case 180:
-                                test37 = 2;
-                                if (WirdUmgenannt > 0.0) {
-                                    while (WirdUmgenannt > 0.0) {
-                                        robot_move(NEUNZIG_LINKS);
-                                        ros::spinOnce();
-
-                                    }
-                                }
-                                while (WirdUmgenannt < 0.0) {
-                                    robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
-
-                                }
-                                Richtungsgeber = 0.0;
-                                break;
-                            case -90:
-                                test37 = 2;
-                                while (WirdUmgenannt <= 0.0) {
-                                    robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
-
-                                }
                                 while (WirdUmgenannt < 90.0) {
                                     robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
-
-                                }
-                                Richtungsgeber = 90.0;
-                                break;
-                        }                                                 //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
-                    } else {                              //Links hat der Turtlebot keine Wand
-                        ROS_INFO("zweite Switch");
-                        switch (Richtungsgeber) {
-                            case 0:
-                                test37 = 1;
-                                ROS_INFO("HALLO: %f", WirdUmgenannt);
-                                while (WirdUmgenannt < 90.0) {
-                                    robot_move(NEUNZIG_LINKS);
+                                    test37 = 1;
                                     ros::spinOnce();
                                 }
-                                ros::spinOnce();
+                                Richtungsgeber = 90;
                                 break;
                             case 90:
-                                test37 = 1;
                                 while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
                                     robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
                                 }
                                 Richtungsgeber = 180;
                                 break;
                             case 180:
-                                test37 = 1;
                                 if (WirdUmgenannt > 0.0) {
                                     while (WirdUmgenannt > 0.0) {
                                         robot_move(NEUNZIG_LINKS);
-                                        ros::spinOnce();
                                     }
                                 }
                                 while (WirdUmgenannt < -90.0) {
                                     robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
                                 }
                                 Richtungsgeber = -90;
-                                ros::spinOnce();
                                 break;
                             case -90:
-                                test37 = 1;
                                 while (WirdUmgenannt < 0) {
                                     robot_move(NEUNZIG_LINKS);
-                                    ros::spinOnce();
                                 }
                                 Richtungsgeber = 0;
-                                ros::spinOnce();
                                 break;
-                        }                                 //Linksdrehung um 90°
+                        }                               //180° Linksdrehung, da Wand links vorhanden ist
+                        counter = 1;                    //um in if-Bedingung (counter ==1) zu kommen
+                    } else {
+                        switch (Richtungsgeber) {
+                            case 0:
+                                while (WirdUmgenannt < 90.0) {
+                                    robot_move(NEUNZIG_LINKS);
+                                }
+                                Richtungsgeber = 90;
+                                break;
+                            case 90:
+                                while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
+                                    robot_move(NEUNZIG_LINKS);
+                                }
+                                Richtungsgeber = 180;
+                                break;
+                            case 180:
+                                if (WirdUmgenannt > 0.0) {
+                                    while (WirdUmgenannt > 0.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                    }
+                                }
+                                while (WirdUmgenannt < -90.0) {
+                                    robot_move(NEUNZIG_LINKS);
+                                }
+                                Richtungsgeber = -90;
+                                break;
+                            case -90:
+                                while (WirdUmgenannt < 0) {
+                                    robot_move(NEUNZIG_LINKS);
+                                }
+                                Richtungsgeber = 0;
+                                break;
+                        }                       //90° Linksdrehung
+                        counter = 1;
                     }
-                } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
-                    //while(averageVorne > 0.2 && (averageRechts < 0.25 || averageLinks < 0.25) ){
-                    robot_move(GERADEAUS_LANG);
-                    //}
+                } else {
+                    robot_move(
+                            GERADEAUS_LANG);                              //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
                 }
-            } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
-                switch (faelle){
+            } else {                             //ab hier an kann der Turtlebot sich orientieren
+                if (averageRechts <=
+                    0.25) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+                    if (averageVorne <=
+                        0.2) {             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
+                        if (averageLinks <=
+                            0.25) {             //Kommentar aus Zeile 153 + noch eine Wand dicht auf der Linken Seite
+                            ROS_INFO("Erste Switch");
+                            switch (Richtungsgeber) {
+                                case 0:
+                                    ROS_INFO("HALLO: %f", WirdUmgenannt);
+                                    test37 = 2;
+                                    if (WirdUmgenannt < 180.0) {
+                                        robot_move(NEUNZIG_LINKS);
 
-                    case 0:
-                        robot_move(GERADEAUS_KURZ);
-                        faelle = 1;
-                    case 1:
+                                    }
 
-                    case 2:
-                        robot_move(GERADEAUS_MITTEL);
-                        faelle = 0;
-                        break;
-                }                                  //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                                    if (WirdUmgenannt > 180.0) {
+                                        Richtungsgeber = 180;
+
+                                    }
+                                    ros::spinOnce();
+                                    break;
+                                case 90:
+                                    test37 = 2;
+                                    while (WirdUmgenannt <= 180.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+
+                                    }
+                                    while (WirdUmgenannt < -90.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+
+                                    }
+                                    Richtungsgeber = -90.0;
+                                    break;
+                                case 180:
+                                    test37 = 2;
+                                    if (WirdUmgenannt > 0.0) {
+                                        while (WirdUmgenannt > 0.0) {
+                                            robot_move(NEUNZIG_LINKS);
+                                            ros::spinOnce();
+
+                                        }
+                                    }
+                                    while (WirdUmgenannt < 0.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+
+                                    }
+                                    Richtungsgeber = 0.0;
+                                    break;
+                                case -90:
+                                    test37 = 2;
+                                    while (WirdUmgenannt <= 0.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+
+                                    }
+                                    while (WirdUmgenannt < 90.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+
+                                    }
+                                    Richtungsgeber = 90.0;
+                                    break;
+                            }                                                 //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
+                        } else {                              //Links hat der Turtlebot keine Wand
+                            ROS_INFO("zweite Switch");
+                            switch (Richtungsgeber) {
+                                case 0:
+                                    test37 = 1;
+                                    ROS_INFO("HALLO: %f", WirdUmgenannt);
+                                    while (WirdUmgenannt < 90.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+                                    }
+                                    ros::spinOnce();
+                                    break;
+                                case 90:
+                                    test37 = 1;
+                                    while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+                                    }
+                                    Richtungsgeber = 180;
+                                    break;
+                                case 180:
+                                    test37 = 1;
+                                    if (WirdUmgenannt > 0.0) {
+                                        while (WirdUmgenannt > 0.0) {
+                                            robot_move(NEUNZIG_LINKS);
+                                            ros::spinOnce();
+                                        }
+                                    }
+                                    while (WirdUmgenannt < -90.0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+                                    }
+                                    Richtungsgeber = -90;
+                                    ros::spinOnce();
+                                    break;
+                                case -90:
+                                    test37 = 1;
+                                    while (WirdUmgenannt < 0) {
+                                        robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
+                                    }
+                                    Richtungsgeber = 0;
+                                    ros::spinOnce();
+                                    break;
+                            }                                 //Linksdrehung um 90°
+                        }
+                    } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
+                        //while(averageVorne > 0.2 && (averageRechts < 0.25 || averageLinks < 0.25) ){
+                        robot_move(GERADEAUS_LANG);
+                        //}
+                    }
+                } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
+                    switch (faelle) {
+
+                        case 0:
+                            robot_move(GERADEAUS_KURZ);
+                            faelle = 1;
+                        case 1:
+                            robot_move(NEUNZIG_RECHTS);
+                            test37 = 3;
+                            ros::spinOnce();
+
+                        case 2:
+                            robot_move(GERADEAUS_MITTEL);
+                            faelle = 0;
+                            break;
+                    }                                  //Turtlebot dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                }
             }
+
+
+            /*current_time = ros::Time::now();
+
+            //compute odometry in a typical way given the velocities of the robot
+            double dt = (current_time - last_time).toSec();
+            double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
+            double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
+            double delta_th = vth * dt;
+
+            x += delta_x;
+            y += delta_y;
+            th += delta_th;
+
+            //since all odometry is 6DOF we'll need a quaternion created from yaw
+            geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
+
+            //first, we'll publish the transform over tf
+            geometry_msgs::TransformStamped odom_trans;
+            odom_trans.header.stamp = current_time;
+            odom_trans.header.frame_id = "odom";
+            odom_trans.child_frame_id = "base_link";
+
+            odom_trans.transform.translation.x = x;
+            odom_trans.transform.translation.y = y;
+            odom_trans.transform.translation.z = 0.0;
+            odom_trans.transform.rotation = odom_quat;
+
+            //send the transform
+            odom_broadcaster.sendTransform(odom_trans);
+
+            //next, we'll publish the odometry message over ROS
+            nav_msgs::Odometry odom;
+            odom.header.stamp = current_time;
+            odom.header.frame_id = "odom";
+
+            //set the position
+            odom.pose.pose.position.x = x;
+            odom.pose.pose.position.y = y;
+            odom.pose.pose.position.z = 0.0;
+            odom.pose.pose.orientation = odom_quat;
+
+            //set the velocity
+            odom.child_frame_id = "base_link";
+            odom.twist.twist.linear.x = vx;
+            odom.twist.twist.linear.y = vy;
+            odom.twist.twist.angular.z = vth;
+
+            //publish the message
+            odom_pub.publish(odom);
+
+            last_time = current_time;
+            r.sleep();*/
+
         }
-
-
-        /*current_time = ros::Time::now();
-
-        //compute odometry in a typical way given the velocities of the robot
-        double dt = (current_time - last_time).toSec();
-        double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
-        double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
-        double delta_th = vth * dt;
-
-        x += delta_x;
-        y += delta_y;
-        th += delta_th;
-
-        //since all odometry is 6DOF we'll need a quaternion created from yaw
-        geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
-
-        //first, we'll publish the transform over tf
-        geometry_msgs::TransformStamped odom_trans;
-        odom_trans.header.stamp = current_time;
-        odom_trans.header.frame_id = "odom";
-        odom_trans.child_frame_id = "base_link";
-
-        odom_trans.transform.translation.x = x;
-        odom_trans.transform.translation.y = y;
-        odom_trans.transform.translation.z = 0.0;
-        odom_trans.transform.rotation = odom_quat;
-
-        //send the transform
-        odom_broadcaster.sendTransform(odom_trans);
-
-        //next, we'll publish the odometry message over ROS
-        nav_msgs::Odometry odom;
-        odom.header.stamp = current_time;
-        odom.header.frame_id = "odom";
-
-        //set the position
-        odom.pose.pose.position.x = x;
-        odom.pose.pose.position.y = y;
-        odom.pose.pose.position.z = 0.0;
-        odom.pose.pose.orientation = odom_quat;
-
-        //set the velocity
-        odom.child_frame_id = "base_link";
-        odom.twist.twist.linear.x = vx;
-        odom.twist.twist.linear.y = vy;
-        odom.twist.twist.angular.z = vth;
-
-        //publish the message
-        odom_pub.publish(odom);
-
-        last_time = current_time;
-        r.sleep();*/
-
-    }
 /*if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne >= 0.2 && counter == 0) {
     robot_move(FORWARD);
 } else if (averageRechts > 0.5 && averageLinks > 0.5 && averageVorne <= 0.2 && counter == 0) {
@@ -595,56 +652,56 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         counter += 1;
     }
 }!*/
-}
+    }
 
-void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
-    // Camera position in map frame
+    void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
+        // Camera position in map frame
 
-    double tx = msg->pose.pose.position.x;
-    double ty = msg->pose.pose.position.y;
-    double tz = msg->pose.pose.position.z;
+        double tx = msg->pose.pose.position.x;
+        double ty = msg->pose.pose.position.y;
+        double tz = msg->pose.pose.position.z;
 
-    // Orientation quaternion
-    tf2::Quaternion q(
-            msg->pose.pose.orientation.x,
-            msg->pose.pose.orientation.y,
-            msg->pose.pose.orientation.z,
-            msg->pose.pose.orientation.w);
+        // Orientation quaternion
+        tf2::Quaternion q(
+                msg->pose.pose.orientation.x,
+                msg->pose.pose.orientation.y,
+                msg->pose.pose.orientation.z,
+                msg->pose.pose.orientation.w);
 
-    // 3x3 Rotation matrix from quaternion
-    tf2::Matrix3x3 m(q);
+        // 3x3 Rotation matrix from quaternion
+        tf2::Matrix3x3 m(q);
 
-    // Roll Pitch and Yaw from rotation matrix
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
+        // Roll Pitch and Yaw from rotation matrix
+        double roll, pitch, yaw;
+        m.getRPY(roll, pitch, yaw);
 
-    // Output the measure
-    ROS_INFO("Received odom in '%s' frame : X: %.2f Y: %.2f Z: %.2f - R: %.2f P: %.2f Y: %.2f",
-             msg->header.frame_id.c_str(),
-             tx, ty, tz,
-             roll * RAD2DEG, pitch * RAD2DEG, yaw * RAD2DEG);
+        // Output the measure
+        ROS_INFO("Received odom in '%s' frame : X: %.2f Y: %.2f Z: %.2f - R: %.2f P: %.2f Y: %.2f",
+                 msg->header.frame_id.c_str(),
+                 tx, ty, tz,
+                 roll * RAD2DEG, pitch * RAD2DEG, yaw * RAD2DEG);
 
-    WirdUmgenannt = yaw * RAD2DEG;
+        WirdUmgenannt = yaw * RAD2DEG;
 
-}
-
-
-int main(int argc, char **argv) {
-    // Initialize a ROS node
-    ros::init(argc, argv, "node");
-    ros::NodeHandle n;
-
-    ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, laserCallback);
-    ros::Subscriber odom_subscriber = n.subscribe("/odom", 10, odomCallback);
-
-    motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-
-    float test1 = averageVorne;
-
-    while (ros::ok) {
-        geometry_msgs::Twist msg;
-        ros::spinOnce();
     }
 
 
-}
+    int main(int argc, char **argv) {
+        // Initialize a ROS node
+        ros::init(argc, argv, "node");
+        ros::NodeHandle n;
+
+        ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, laserCallback);
+        ros::Subscriber odom_subscriber = n.subscribe("/odom", 10, odomCallback);
+
+        motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+
+        float test1 = averageVorne;
+
+        while (ros::ok) {
+            geometry_msgs::Twist msg;
+            ros::spinOnce();
+        }
+
+
+    }
