@@ -26,12 +26,12 @@ geometry_msgs::Twist motor_command;
 static int counter = 1;
 float posiZ = 0.0;
 static float WirdUmgenannt = 0;
- int Richtungsgeber = 0;
+static int Richtungsgeber = 0;
 static float averageVorne = 0.0;
 static float averageLinks = 0.0;
 static float averageRechts = 0.0;
 static float averageVorneRechts = 0.0;
-int faelle = 0;
+static int faelle = 0;
 static int test37 = 0;
 
 
