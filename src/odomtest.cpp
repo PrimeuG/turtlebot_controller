@@ -27,7 +27,7 @@ static int counter = 1;
 float posiZ = 0.0;
 static float WirdUmgenannt = 0;
 static int Richtungsgeber = 0;
-static float averageVorne = 0.0 ;
+static float averageVorne = 0.0;
 static float averageLinks = 0.0;
 static float averageRechts = 0.0;
 static float averageVorneRechts = 0.0;
@@ -215,16 +215,115 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("Counter: %i", counter);
 
 
-        if (test37 == 1){
-            while (WirdUmgenannt < 160.0) {
-                robot_move(NEUNZIG_LINKS);
-                ros::spinOnce();
+        if (test37 == 1) {
+
+            switch (Richtungsgeber) {
+                case 0:
+
+                    ROS_INFO("HALLO: %f", WirdUmgenannt);
+                    while (WirdUmgenannt < 90.0) {
+                        robot_move(NEUNZIG_LINKS);
+                        ros::spinOnce();
+                    }
+
+                    test37 = 0;
+                    Richtungsgeber = 90;
+                    ros::spinOnce();
+                    break;
+                case 90:
+                    while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
+                        robot_move(NEUNZIG_LINKS);
+                        ros::spinOnce();
+                    }
+                    Richtungsgeber = 180;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+                case 180:
+                    if (WirdUmgenannt > 0.0) {
+                        while (WirdUmgenannt > 0.0) {
+                            robot_move(NEUNZIG_LINKS);
+                            ros::spinOnce();
+                        }
+                    }
+                    while (WirdUmgenannt < -90.0) {
+                        robot_move(NEUNZIG_LINKS);
+                        ros::spinOnce();
+                    }
+                    Richtungsgeber = -90;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+                case -90:
+                    while (WirdUmgenannt < 0) {
+                        robot_move(NEUNZIG_LINKS);
+                        ros::spinOnce();
+                    }
+                    Richtungsgeber = 0;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
             }
 
-            ROS_INFO("ENDE!!!!!!!!!!!!!!!!!!!!!!!!");
-            Richtungsgeber = 180;
+        }
 
-           test37 = 0;
+
+        if (test37 == 2) {
+            switch (Richtungsgeber) {
+                case 0:
+                    ROS_INFO("HALLO: %f", WirdUmgenannt);
+                    while (WirdUmgenannt < 180.0 && WirdUmgenannt > -1.0) {
+                        robot_move(NEUNZIG_LINKS);
+                        ros::spinOnce();
+                    }
+
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+                case 90:
+                    while (WirdUmgenannt <= 180.0) {
+                        robot_move(NEUNZIG_LINKS);
+
+                    }
+                    while (WirdUmgenannt < -90.0) {
+                        robot_move(NEUNZIG_LINKS);
+
+                    }
+                    Richtungsgeber = -90.0;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+                case 180:
+                    if (WirdUmgenannt > 0.0) {
+                        while (WirdUmgenannt > 0.0) {
+                            robot_move(NEUNZIG_LINKS);
+
+                        }
+                    }
+                    while (WirdUmgenannt < 0.0) {
+                        robot_move(NEUNZIG_LINKS);
+
+                    }
+                    Richtungsgeber = 0.0;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+                case -90:
+                    while (WirdUmgenannt <= 0.0) {
+                        robot_move(NEUNZIG_LINKS);
+
+                    }
+                    while (WirdUmgenannt < 90.0) {
+                        robot_move(NEUNZIG_LINKS);
+
+                    }
+                    Richtungsgeber = 90.0;
+                    test37 = 0;
+                    ros::spinOnce();
+                    break;
+            }
+
+
         }
         if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
             ros::spinOnce();
@@ -315,47 +414,58 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         switch (Richtungsgeber) {
                             case 0:
                                 ROS_INFO("HALLO: %f", WirdUmgenannt);
+                                test37 = 2;
                                 if (WirdUmgenannt < 180.0) {
                                     robot_move(NEUNZIG_LINKS);
-                                    test37 = 1 ;
+
                                 }
 
-                                if(WirdUmgenannt>180.0){
+                                if (WirdUmgenannt > 180.0) {
                                     Richtungsgeber = 180;
+
                                 }
                                 ros::spinOnce();
                                 break;
                             case 90:
+                                test37 = 2;
                                 while (WirdUmgenannt <= 180.0) {
                                     robot_move(NEUNZIG_LINKS);
+                                    ros::spinOnce();
 
                                 }
                                 while (WirdUmgenannt < -90.0) {
                                     robot_move(NEUNZIG_LINKS);
+                                    ros::spinOnce();
 
                                 }
                                 Richtungsgeber = -90.0;
                                 break;
                             case 180:
+                                test37 = 2;
                                 if (WirdUmgenannt > 0.0) {
                                     while (WirdUmgenannt > 0.0) {
                                         robot_move(NEUNZIG_LINKS);
+                                        ros::spinOnce();
 
                                     }
                                 }
                                 while (WirdUmgenannt < 0.0) {
                                     robot_move(NEUNZIG_LINKS);
+                                    ros::spinOnce();
 
                                 }
                                 Richtungsgeber = 0.0;
                                 break;
                             case -90:
+                                test37 = 2;
                                 while (WirdUmgenannt <= 0.0) {
                                     robot_move(NEUNZIG_LINKS);
+                                    ros::spinOnce();
 
                                 }
                                 while (WirdUmgenannt < 90.0) {
                                     robot_move(NEUNZIG_LINKS);
+                                    ros::spinOnce();
 
                                 }
                                 Richtungsgeber = 90.0;
@@ -365,43 +475,45 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         ROS_INFO("zweite Switch");
                         switch (Richtungsgeber) {
                             case 0:
-
+                                test37 = 1;
                                 ROS_INFO("HALLO: %f", WirdUmgenannt);
-                                if (WirdUmgenannt < 90.0) {
+                                while (WirdUmgenannt < 90.0) {
                                     robot_move(NEUNZIG_LINKS);
-                                }
-
-                                if(WirdUmgenannt>90.0){
-                                    Richtungsgeber = 90;
+                                    ros::spinOnce();
                                 }
                                 ros::spinOnce();
                                 break;
                             case 90:
+                                test37 = 1;
                                 while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
                                     robot_move(NEUNZIG_LINKS);
-
+                                    ros::spinOnce();
                                 }
                                 Richtungsgeber = 180;
                                 break;
                             case 180:
+                                test37 = 1;
                                 if (WirdUmgenannt > 0.0) {
                                     while (WirdUmgenannt > 0.0) {
                                         robot_move(NEUNZIG_LINKS);
-
+                                        ros::spinOnce();
                                     }
                                 }
                                 while (WirdUmgenannt < -90.0) {
                                     robot_move(NEUNZIG_LINKS);
-
+                                    ros::spinOnce();
                                 }
                                 Richtungsgeber = -90;
+                                ros::spinOnce();
                                 break;
                             case -90:
+                                test37 = 1;
                                 while (WirdUmgenannt < 0) {
                                     robot_move(NEUNZIG_LINKS);
-
+                                    ros::spinOnce();
                                 }
                                 Richtungsgeber = 0;
+                                ros::spinOnce();
                                 break;
                         }                                 //Linksdrehung um 90°
                     }
@@ -565,11 +677,10 @@ int main(int argc, char **argv) {
 
     float test1 = averageVorne;
 
-    while(ros::ok){
+    while (ros::ok) {
         geometry_msgs::Twist msg;
         ros::spinOnce();
     }
-
 
 
 }
