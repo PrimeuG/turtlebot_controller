@@ -70,7 +70,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ROS_INFO("GERADEAUS_KURZ! \n");
         motor_command.linear.x = 0.1;
         motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 20000000).sleep();
+        ros::Duration(0, 5000000).sleep();
 
     } else if (move_type == GERADEAUS_MITTEL) {
         ROS_INFO("GERADEAUS_MITTEL! \n");
@@ -82,7 +82,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ROS_INFO("GERADEAUS_MITTEL! \n");
         motor_command.linear.x = 0.1;
         motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 40000000).sleep(); //Doppelt mal so lang wie das andere davor
+        ros::Duration(0, 10000000).sleep(); //Doppelt mal so lang wie das andere davor
     } else if (move_type == NEUNZIG_LINKS) {
 
         ROS_INFO("Neunzig Links! \n");
@@ -332,7 +332,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
 
-            }
+            }}
             if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
                 ros::spinOnce();
                 if (averageVorne <= 0.2) {            //Turtlebot hat Wand vor sich erreicht
