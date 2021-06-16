@@ -26,12 +26,12 @@ geometry_msgs::Twist motor_command;
 static int counter = 1;
 float posiZ = 0.0;
 static float WirdUmgenannt = 0;
-static int Richtungsgeber = 0;
+ int Richtungsgeber = 0;
 static float averageVorne = 0.0;
 static float averageLinks = 0.0;
 static float averageRechts = 0.0;
 static float averageVorneRechts = 0.0;
-static int faelle = 0;
+int faelle = 0;
 static int test37 = 0;
 
 
@@ -70,7 +70,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ROS_INFO("GERADEAUS_KURZ! \n");
         motor_command.linear.x = 0.1;
         motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 5000000).sleep();
+        ros::Duration(0, 10000000).sleep();
 
     } else if (move_type == GERADEAUS_MITTEL) {
         ROS_INFO("GERADEAUS_MITTEL! \n");
@@ -91,7 +91,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command_publisher.publish(motor_command);
     } else if (move_type == NEUNZIG_RECHTS) {
 
-        ROS_INFO("Neunzig Rechts! \n");
+       // ROS_INFO("Neunzig Rechts! \n");
         motor_command.linear.x = 0.0;
         motor_command.angular.z = -0.1;
         motor_command_publisher.publish(motor_command);
@@ -230,7 +230,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
                     }
-
+                    Richtungsgeber = 180;
                     test37 = 0;
                     ros::spinOnce();
                     break;
@@ -258,7 +258,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         robot_move(NEUNZIG_LINKS);
 
                     }
-                    Richtungsgeber = 0.0;
+                    Richtungsgeber = 0;
                     test37 = 0;
                     ros::spinOnce();
                     break;
@@ -271,7 +271,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         robot_move(NEUNZIG_LINKS);
 
                     }
-                    Richtungsgeber = 90.0;
+                    Richtungsgeber = 90;
                     test37 = 0;
                     ros::spinOnce();
                     break;
@@ -279,7 +279,9 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
 
         if (test37 == 3) {
-
+            ROS_INFO("Fälle: %i", faelle);
+            ROS_INFO("Umgenannt: %f", WirdUmgenannt);
+            ROS_INFO("Richtungsgeber: %i", Richtungsgeber);
 
             for(int y = 0; y < 20; y++){
                 ROS_INFO("SWITCH CHECKPOINT 1");
@@ -294,7 +296,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         }
 
                         case 0:
-                            ROS_INFO("HALLO: %f", WirdUmgenannt);
                             while (WirdUmgenannt > -90.0) {
                                 robot_move(NEUNZIG_RECHTS);
                                 ros::spinOnce();
@@ -313,7 +314,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                             ros::spinOnce();
                             break;
                         case 180:
-
+                            ROS_INFO("HALLO: %f", WirdUmgenannt);
                             while (WirdUmgenannt > 90) {
                                 robot_move(NEUNZIG_RECHTS);
                                 ros::spinOnce();
@@ -552,6 +553,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                             robot_move(NEUNZIG_RECHTS);
                             test37 = 3;
                             ros::spinOnce();
+                            break;
 
                         case 2:
                             robot_move(GERADEAUS_MITTEL);
