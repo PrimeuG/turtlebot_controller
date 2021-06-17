@@ -70,7 +70,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ROS_INFO("GERADEAUS_KURZ! \n");
         motor_command.linear.x = 0.1;
         motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 10000000).sleep();
+        ros::Duration(0, 15000000).sleep();
 
     } else if (move_type == GERADEAUS_MITTEL) {
         ROS_INFO("GERADEAUS_MITTEL! \n");
@@ -82,7 +82,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         ROS_INFO("GERADEAUS_MITTEL! \n");
         motor_command.linear.x = 0.1;
         motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 10000000).sleep(); //Doppelt mal so lang wie das andere davor
+        ros::Duration(0, 20000000).sleep(); //Doppelt mal so lang wie das andere davor
     } else if (move_type == NEUNZIG_LINKS) {
 
         //ROS_INFO("Neunzig Links! \n");
@@ -105,7 +105,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 }
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
-
+    ROS_INFO("Richtungsgeber %i", Richtungsgeber);
     laser_msg = *msg;
     std::vector<float> laser_ranges;
     laser_ranges = laser_msg.ranges;
@@ -311,7 +311,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                             break;
                         case 180:
                             ROS_INFO("HALLO: %f", WirdUmgenannt);
-                            while (WirdUmgenannt > 90) {
+                            while (WirdUmgenannt > 90 || WirdUmgenannt < 0) {
                                 robot_move(NEUNZIG_RECHTS);
                                 ros::spinOnce();
                             }
