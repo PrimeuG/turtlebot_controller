@@ -68,9 +68,10 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command_publisher.publish(motor_command);
 
         ROS_INFO("GERADEAUS_KURZ! \n");
-        motor_command.linear.x = 0.1;
 
-        for(int k = 0; k < 10000; k++){
+
+        for(int k = 0; k < 300000; k++){
+            motor_command.linear.x = 0.1;
             motor_command_publisher.publish(motor_command);
         }
         //motor_command_publisher.publish(motor_command);
@@ -81,11 +82,12 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
         //float angular_duration = goal_angle/angular_speed;
         motor_command.angular.z = 0.0;
+        motor_command.linear.x = 0.05;
         motor_command_publisher.publish(motor_command);
 
         ROS_INFO("GERADEAUS_MITTEL! \n");
         motor_command.linear.x = 0.1;
-        for(int k = 0; k < 12000; k++){
+        for(int k = 0; k < 400000; k++){
             motor_command_publisher.publish(motor_command);
         }
         //motor_command_publisher.publish(motor_command);
@@ -338,13 +340,13 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     }
 
             }else if(faelle == 2){
-                robot_move(GERADEAUS_MITTEL);
-                faelle = 0;
-                test37 = 0;
-
                 for(int y = 0; y < 20; y++){
-                    ROS_INFO("SWITCH CHECKPOINT 3");
-                }
+                    ROS_INFO("SWITCH CHECKPOINT 3");}
+                    robot_move(GERADEAUS_MITTEL);
+                    faelle = 0;
+                    test37 = 0;
+
+
                 ros::spinOnce();
 
                 }
