@@ -69,8 +69,12 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
         ROS_INFO("GERADEAUS_KURZ! \n");
         motor_command.linear.x = 0.1;
-        motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 15000000).sleep();
+
+        for(int k = 0; k < 10000; k++){
+            motor_command_publisher.publish(motor_command);
+        }
+        //motor_command_publisher.publish(motor_command);
+        //ros::Duration(0, 15000000).sleep();
 
     } else if (move_type == GERADEAUS_MITTEL) {
         ROS_INFO("GERADEAUS_MITTEL! \n");
@@ -81,8 +85,11 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
         ROS_INFO("GERADEAUS_MITTEL! \n");
         motor_command.linear.x = 0.1;
-        motor_command_publisher.publish(motor_command);
-        ros::Duration(0, 20000000).sleep(); //Doppelt mal so lang wie das andere davor
+        for(int k = 0; k < 12000; k++){
+            motor_command_publisher.publish(motor_command);
+        }
+        //motor_command_publisher.publish(motor_command);
+       // ros::Duration(0, 20000000).sleep(); //Doppelt mal so lang wie das andere davor
     } else if (move_type == NEUNZIG_LINKS) {
 
         //ROS_INFO("Neunzig Links! \n");
