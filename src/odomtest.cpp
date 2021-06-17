@@ -22,6 +22,7 @@ using namespace std_msgs;
 ros::Publisher motor_command_publisher;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
+ros::Rate rateH(2);
 
 static int counter = 1;
 float posiZ = 0.0;
@@ -163,6 +164,8 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
         }
     }
+
+    rateH.sleep();
     ROS_INFO("VORNE %f", averageVorne);
     if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
         averageRechts > 3.5 || averageVorneRechts <= 0 || averageVorneRechts > 3.5) {
