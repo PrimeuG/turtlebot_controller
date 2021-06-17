@@ -298,7 +298,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             }
             if (faelle == 4) {
 
-                while(weg < 1 || weg > -1 ){
+                while(weg < 0.12 && weg > -0.12 ){
 
                     robot_move(GERADEAUS_MITTEL);
                     ros::spinOnce();
@@ -356,7 +356,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
                 }
 
-                while(weg < 1 || weg > -1 ){
+                while(weg < 0.12 && weg > -0.12 ){
                     robot_move(GERADEAUS_MITTEL);
                     ros::spinOnce();
                 }
@@ -674,6 +674,5 @@ int main(int argc, char **argv) {
         geometry_msgs::Twist msg;
         ros::spinOnce();
     }
-
 
 }
