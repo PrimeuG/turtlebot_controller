@@ -22,7 +22,7 @@ using namespace std_msgs;
 ros::Publisher motor_command_publisher;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
-ros::Rate rateH(2);
+
 
 static int counter = 1;
 float posiZ = 0.0;
@@ -69,13 +69,13 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.linear.x = 0.05;
         motor_command_publisher.publish(motor_command);
     } else if (move_type == GERADEAUS_KURZ) {
-        ROS_INFO("GERADEAUS_KURZ! \n");
+        //ROS_INFO("GERADEAUS_KURZ! \n");
 
         //float angular_duration = goal_angle/angular_speed;
         motor_command.angular.z = 0.0;
         motor_command_publisher.publish(motor_command);
 
-        ROS_INFO("GERADEAUS_KURZ! \n");
+        //ROS_INFO("GERADEAUS_KURZ! \n");
 
 
         for (int k = 0; k < 300000; k++) {
@@ -95,7 +95,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == NEUNZIG_LINKS) {
 
-        //ROS_INFO("Neunzig Links! \n");
+        ROS_INFO("Neunzig Links! \n");
         motor_command.linear.x = 0.0;
         motor_command.angular.z = 0.1;
         motor_command_publisher.publish(motor_command);
@@ -116,6 +116,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     ROS_INFO("Richtungsgeber %i", Richtungsgeber);
+    ros::Rate rateH(5);
     laser_msg = *msg;
     std::vector<float> laser_ranges;
     laser_ranges = laser_msg.ranges;
@@ -165,8 +166,8 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
     }
 
-    rateH.sleep();
-    ROS_INFO("VORNE %f", averageVorne);
+   // rateH.sleep();
+    //ROS_INFO("VORNE %f", averageVorne);
     if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
         averageRechts > 3.5 || averageVorneRechts <= 0 || averageVorneRechts > 3.5) {
         ROS_INFO("STÖRUNG");
@@ -175,10 +176,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("averageRechts: %f", averageRechts);
         ROS_INFO("averageLinks: %f", averageLinks);
         ROS_INFO("averageVorne: %f", averageVorne);
-        ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
+        //ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
         ros::Rate rate(1);
 
-        ROS_INFO("Counter: %i", counter);
+        //ROS_INFO("Counter: %i", counter);
 
 
         if (test37 == 1) {
@@ -186,7 +187,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             switch (Richtungsgeber) {
                 case 0:
 
-                    ROS_INFO("HALLO: %f", WirdUmgenannt);
+                    //ROS_INFO("HALLO: %f", WirdUmgenannt);
                     while (WirdUmgenannt < 90.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -237,7 +238,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         if (test37 == 2) {
             switch (Richtungsgeber) {
                 case 0:
-                    ROS_INFO("HALLO: %f", WirdUmgenannt);
+                    //ROS_INFO("HALLO: %f", WirdUmgenannt);
                     while (WirdUmgenannt < 180.0 && WirdUmgenannt > -1.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -297,7 +298,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             ROS_INFO("Richtungsgeber: %i", Richtungsgeber);
 
             for (int y = 0; y < 20; y++) {
-                ROS_INFO("SWITCH CHECKPOINT 1");
+                //ROS_INFO("SWITCH CHECKPOINT 1");
             }
             if (faelle == 4) {
 
@@ -333,7 +334,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         ros::spinOnce();
                         break;
                     case 180:
-                        ROS_INFO("HALLO: %f", WirdUmgenannt);
+                      //  ROS_INFO("HALLO: %f", WirdUmgenannt);
                         while (WirdUmgenannt > 90 || WirdUmgenannt < 0) {
                             robot_move(NEUNZIG_RECHTS);
                             ros::spinOnce();
@@ -367,6 +368,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 koordinatenVorwaerts = 0;
                 faelle = 0;
                 test37 = 0;
+                rateH.sleep();
                 ros::spinOnce();
 
 
@@ -374,7 +376,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
 
         }
-        if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
+        /*if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
             ros::spinOnce();
             if (averageVorne <= 0.2) {            //Turtlebot hat Wand vor sich erreicht
 
@@ -452,7 +454,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 robot_move(
                         GERADEAUS_LANG);                              //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
             }
-        } else {                             //ab hier an kann der Turtlebot sich orientieren
+        }*/ //if {                             //ab hier an kann der Turtlebot sich orientieren
             if (averageRechts <=
                 0.25) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
                 if (averageVorne <=
@@ -462,7 +464,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         ROS_INFO("Erste Switch");
                         switch (Richtungsgeber) {
                             case 0:
-                                ROS_INFO("HALLO: %f", WirdUmgenannt);
+                                //ROS_INFO("HALLO: %f", WirdUmgenannt);
                                 test37 = 2;
                                 if (WirdUmgenannt < 180.0) {
                                     robot_move(NEUNZIG_LINKS);
@@ -533,6 +535,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                                 ros::spinOnce();
                                 break;
                             case 90:
+                                ROS_INFO("DREHUNGSWINKEL90: %f", WirdUmgenannt);
                                 test37 = 1;
                                 while (WirdUmgenannt < 180 && WirdUmgenannt > 0) {
                                     robot_move(NEUNZIG_LINKS);
@@ -569,9 +572,12 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
                     //while(averageVorne > 0.2 && (averageRechts < 0.25 || averageLinks < 0.25) ){
                     robot_move(GERADEAUS_LANG);
+                    ros::spinOnce();
                     //}
                 }
-            } else {                             //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
+            } else {
+                ROS_INFO("KJHGBSDKJGADKHJAGKJHDGAKJHSGKJHASGFKHJSAGFKHSAGKFHGSKAJFGSKAHJGFKJHSAKJHDGSAJ")  ;
+                ROS_INFO("faelle %i:", faelle);//Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
                 switch (faelle) {
 
                     case 0:
@@ -595,7 +601,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
 
     }
-}
+//}
 
 void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
     // Camera position in map frame
@@ -631,11 +637,11 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
         weg = 0;
     }
 
-    ROS_INFO("WEG 2. CHECKPOINT: %f", weg);
-    ROS_INFO("CHECKPOINT 2 RECHNERXX: %f", rechnerxx);
-    ROS_INFO("CHECKPOINT 2 RECHNERYY: %f", rechneryy);
-    ROS_INFO("CHECKPOINT 2 PREVIOUS X: %f", previousX);
-    ROS_INFO("CHECKPOINT 2 PREVIOUS Y: %f", previousy);
+   // ROS_INFO("WEG 2. CHECKPOINT: %f", weg);
+    //ROS_INFO("CHECKPOINT 2 RECHNERXX: %f", rechnerxx);
+    //ROS_INFO("CHECKPOINT 2 RECHNERYY: %f", rechneryy);
+    //ROS_INFO("CHECKPOINT 2 PREVIOUS X: %f", previousX);
+    //ROS_INFO("CHECKPOINT 2 PREVIOUS Y: %f", previousy);
     // Orientation quaternion
     tf2::Quaternion q(
             msg->pose.pose.orientation.x,
@@ -663,9 +669,10 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
 
 int main(int argc, char **argv) {
     // Initialize a ROS node
+
     ros::init(argc, argv, "node");
     ros::NodeHandle n;
-
+    ros::Rate rateH(5);
     ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, laserCallback);
     ros::Subscriber odom_subscriber = n.subscribe("/odom", 10, odomCallback);
 
@@ -673,9 +680,10 @@ int main(int argc, char **argv) {
 
     float test1 = averageVorne;
 
-    while (ros::ok) {
+    while (ros::ok()) {
         geometry_msgs::Twist msg;
-        ros::spinOnce();
+
+        ros::spin();
     }
 
 }
