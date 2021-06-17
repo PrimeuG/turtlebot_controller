@@ -299,11 +299,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             if (faelle == 4) {
 
                 while(weg < 1 || weg > -1 ){
-                    ROS_INFO("WEG 1. CHECKPOINT: %f", weg);
-                    ROS_INFO("CHECKPOINT 1 RECHNERXX: %f", rechnerxx);
-                    ROS_INFO("CHECKPOINT 1 RECHNERYY: %f", rechneryy);
-                    ROS_INFO("CHECKPOINT 1 PREVIOUS X: %f", previousX);
-                    ROS_INFO("CHECKPOINT 1 PREVIOUS Y: %f", previousy);
 
                     robot_move(GERADEAUS_MITTEL);
                     ros::spinOnce();
@@ -362,11 +357,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 }
 
                 while(weg < 1 || weg > -1 ){
-                    ROS_INFO("WEG 2. CHECKPOINT: %f", weg);
-                    ROS_INFO("CHECKPOINT 2 RECHNERXX: %f", rechnerxx);
-                    ROS_INFO("CHECKPOINT 2 RECHNERYY: %f", rechneryy);
-                    ROS_INFO("CHECKPOINT 2 PREVIOUS X: %f", previousX);
-                    ROS_INFO("CHECKPOINT 2 PREVIOUS Y: %f", previousy);
                     robot_move(GERADEAUS_MITTEL);
                     ros::spinOnce();
                 }
@@ -633,10 +623,16 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
 
     }
 
+
     if (!(faelle == 4) && !(faelle == 2)) {
         weg = 0;
     }
 
+    ROS_INFO("WEG 2. CHECKPOINT: %f", weg);
+    ROS_INFO("CHECKPOINT 2 RECHNERXX: %f", rechnerxx);
+    ROS_INFO("CHECKPOINT 2 RECHNERYY: %f", rechneryy);
+    ROS_INFO("CHECKPOINT 2 PREVIOUS X: %f", previousX);
+    ROS_INFO("CHECKPOINT 2 PREVIOUS Y: %f", previousy);
     // Orientation quaternion
     tf2::Quaternion q(
             msg->pose.pose.orientation.x,
