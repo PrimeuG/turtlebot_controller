@@ -86,7 +86,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == GERADEAUS_MITTEL) {
 
-        ROS_INFO("Geradeaus Mittel! \n");
+        //ROS_INFO("Geradeaus Mittel! \n");
 
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.05;
