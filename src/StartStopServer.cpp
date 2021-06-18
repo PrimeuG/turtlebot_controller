@@ -250,17 +250,17 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     }
                     Richtungsgeber = 180;
                     test37 = 0;
-
                     ros::spinOnce();
                     break;
                 case 90:
                     while (WirdUmgenannt <= 180.0) {
                         robot_move(NEUNZIG_LINKS);
+                        ros::spinOnce();
 
                     }
                     while (WirdUmgenannt < -90.0) {
                         robot_move(NEUNZIG_LINKS);
-
+                        ros::spinOnce();
                     }
                     Richtungsgeber = -90.0;
                     test37 = 0;
@@ -270,12 +270,13 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     if (WirdUmgenannt > 0.0) {
                         while (WirdUmgenannt > 0.0) {
                             robot_move(NEUNZIG_LINKS);
+                            ros::spinOnce();
 
                         }
                     }
                     while (WirdUmgenannt < 0.0) {
                         robot_move(NEUNZIG_LINKS);
-
+                        ros::spinOnce();
                     }
                     Richtungsgeber = 0;
                     test37 = 0;
@@ -284,11 +285,11 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 case -90:
                     while (WirdUmgenannt <= 0.0) {
                         robot_move(NEUNZIG_LINKS);
-
+                        ros::spinOnce();
                     }
                     while (WirdUmgenannt < 90.0) {
                         robot_move(NEUNZIG_LINKS);
-
+                        ros::spinOnce();
                     }
                     Richtungsgeber = 90;
                     test37 = 0;
@@ -387,7 +388,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 koordinatenVorwaerts = 0;
                 faelle = 0;
                 test37 = 0;
-                rateH.sleep();
+               // rateH.sleep();
                 ros::spinOnce();
 
 
