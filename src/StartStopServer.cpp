@@ -583,7 +583,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             ROS_INFO("KJHGBSDKJGADKHJAGKJHDGAKJHSGKJHASGFKHJSAGFKHSAGKFHGSKAJFGSKAHJGFKJHSAKJHDGSAJ");
             ROS_INFO("faelle %i:", faelle);//Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
 
-            if (averageVorne) {
+            if (averageVorne <= 0.2) {
 
                 if(faelle == 0){
                     faelle = 1;
