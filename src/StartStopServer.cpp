@@ -307,6 +307,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             if (faelle == 4) {
                 if(averageVorne < 0.18){
                     faelle = 1;
+                    koordinatenVorwaerts = 0;
                     ROS_INFO("NOTSTOPPER 2!!!!!!!!!!!!!!!!!!!!!!");
                     ros::spinOnce();
                 }
@@ -597,7 +598,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             ROS_INFO("faelle %i:", faelle);//Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
 
             if (averageVorne <= 0.2) {
-
+                ROS_INFO("ZULU  !!!!");
                 if(faelle == 0){
                     faelle = 1;
                     ros::spinOnce();
