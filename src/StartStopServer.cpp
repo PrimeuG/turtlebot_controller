@@ -254,7 +254,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     ros::spinOnce();
                     break;
                 case 90:
-                    while (WirdUmgenannt <= 180.0) {
+                    while (WirdUmgenannt <= 180.0 && WirdUmgenannt > 0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
 
