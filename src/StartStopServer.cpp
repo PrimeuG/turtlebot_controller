@@ -305,7 +305,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 //ROS_INFO("SWITCH CHECKPOINT 1");
             }
             if (faelle == 4) {
-
+                if(averageVorne < 0.14){
+                    faelle = 1;
+                    ros::spinOnce();
+                }
                 while (weg < 0.12 && weg > -0.12) {
 
                     robot_move(GERADEAUS_MITTEL);
@@ -362,6 +365,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 for (int y = 0; y < 20; y++) {
                     ROS_INFO("SWITCH CHECKPOINT 3");
 
+                }
+                if(averageVorne < 0.14){
+                    faelle = 0;
+                    ros::spinOnce();
                 }
 
                 while (weg < 0.12 && weg > -0.12) {
