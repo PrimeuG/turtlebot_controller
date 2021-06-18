@@ -95,7 +95,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == NEUNZIG_LINKS) {
 
-        ROS_INFO("Neunzig Links! \n");
+        //ROS_INFO("Neunzig Links! \n");
         motor_command.linear.x = 0.0;
         motor_command.angular.z = 0.1;
         motor_command_publisher.publish(motor_command);
@@ -116,6 +116,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     ROS_INFO("Richtungsgeber %i", Richtungsgeber);
+    ROS_INFO("Lasercallback faelle: %i", faelle);
     ros::Rate rateH(5);
     laser_msg = *msg;
     std::vector<float> laser_ranges;
@@ -311,7 +312,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     ROS_INFO("NOTSTOPPER 2!!!!!!!!!!!!!!!!!!!!!!");
                     ros::spinOnce();
                 }
-                while (weg < 0.12 && weg > -0.12) {
+                while (weg < 0.13 && weg > -0.13) {
 
                     robot_move(GERADEAUS_MITTEL);
                     ros::spinOnce();
@@ -378,7 +379,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     ros::spinOnce();
                 }
 
-                while (weg < 0.12 && weg > -0.12) {
+                while (weg < 0.13 && weg > -0.13) {
                     robot_move(GERADEAUS_MITTEL);
                     ros::spinOnce();
                 }
@@ -474,7 +475,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             }
         }*/ //if {                             //ab hier an kann der Turtlebot sich orientieren
         if (averageRechts <=
-            0.25) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+            0.27) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
             if (averageVorne <=
                 0.2) {             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
                 if (averageLinks <=
@@ -601,6 +602,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 ROS_INFO("ZULU  !!!!");
                 if(faelle == 0){
                     faelle = 1;
+                    test37 = 3;
                     ros::spinOnce();
                 }
 
