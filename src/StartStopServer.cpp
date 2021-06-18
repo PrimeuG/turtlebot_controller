@@ -117,7 +117,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     ROS_INFO("Richtungsgeber %i", Richtungsgeber);
     ROS_INFO("Lasercallback faelle: %i", faelle);
-    ros::Rate rateH(5);
+    ros::Rate rateH(3);
     laser_msg = *msg;
     std::vector<float> laser_ranges;
     laser_ranges = laser_msg.ranges;
@@ -271,7 +271,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         while (WirdUmgenannt > 0.0) {
                             robot_move(NEUNZIG_LINKS);
                             ros::spinOnce();
-
                         }
                     }
                     while (WirdUmgenannt < 0.0) {
@@ -388,7 +387,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 koordinatenVorwaerts = 0;
                 faelle = 0;
                 test37 = 0;
-               // rateH.sleep();
+                rateH.sleep();
                 ros::spinOnce();
 
 
@@ -486,15 +485,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         case 0:
                             //ROS_INFO("HALLO: %f", WirdUmgenannt);
                             test37 = 2;
-                            if (WirdUmgenannt < 180.0) {
-                                robot_move(NEUNZIG_LINKS);
-
-                            }
-
-                            if (WirdUmgenannt > 180.0) {
-                                Richtungsgeber = 180;
-
-                            }
                             ros::spinOnce();
                             break;
                         case 90:
