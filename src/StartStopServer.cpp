@@ -33,6 +33,7 @@ static float averageVorneRechts = 0.0;
 static int rechtsAuswahl = 0;
 static int bewegungstyp = 0;  //Bewegungstyp 0 Laser, Typ 1 90 Links, Typ 2 180 Grad, Typ 3 Rechtskurve
 static int koordinatenVorwaerts = 0;
+static std::string MoveAusgabe;
 
 
 float x_fest = 0; //erster X Wert
@@ -54,7 +55,7 @@ typedef enum _ROBOT_MOVEMENT {
 
 
 bool robot_move(const ROBOT_MOVEMENT move_type) {
-
+    MoveAusgabe = move_type;
     if (move_type == STOP) {
 
         ROS_INFO("STOP! \n");
@@ -101,6 +102,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     ROS_INFO("Richtungsgeber %i", Richtungsgeber);
     ROS_INFO("Lasercallback rechtsAuswahl: %i", rechtsAuswahl);
+    ROS_INFO("RobotMove Befehl: %s", MoveAusgabe);
 
     ros::Rate rateH(3);
     laser_msg = *msg;
