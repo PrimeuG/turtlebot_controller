@@ -54,7 +54,7 @@ typedef enum _ROBOT_MOVEMENT {
 
 
 bool robot_move(const ROBOT_MOVEMENT move_type) {
-    ros::Rate rateMove(5);
+    ros::Rate rateMove(20);
     if (move_type == STOP) {
         rateMove.sleep();
         ROS_INFO("STOP! \n");
