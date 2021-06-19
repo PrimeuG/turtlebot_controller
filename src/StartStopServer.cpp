@@ -27,7 +27,7 @@ geometry_msgs::Twist motor_command;
 static int counter = 1;
 float posiZ = 0.0;
 static float WirdUmgenannt = 0;
-static int Richtungsgeber = 0;
+static int Richtungsgeber = 180;
 static float averageVorne = 0.0;
 static float averageLinks = 0.0;
 static float averageRechts = 0.0;
@@ -476,7 +476,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             }
         }*/ //if {                             //ab hier an kann der Turtlebot sich orientieren
         if (averageRechts <=
-            0.27) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+            0.275) {            //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
             if (averageVorne <=
                 0.2) {             //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
                 if (averageLinks <=
