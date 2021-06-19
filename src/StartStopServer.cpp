@@ -67,11 +67,17 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == GERADEAUS) {
 
-        ROS_INFO("Geradeaus! \n");
-
-        motor_command.angular.z = 0.0;
-        motor_command.linear.x = 0.05;
-        motor_command_publisher.publish(motor_command);
+        //ROS_INFO("Geradeaus! \n");
+        if (averageVorne > 0.14) {
+            motor_command.angular.z = 0.0;
+            motor_command.linear.x = 0.05;
+            motor_command_publisher.publish(motor_command);
+        } else {
+            motor_command.angular.z = 0.0;
+            motor_command.linear.x = 0.0;
+            motor_command_publisher.publish(motor_command);
+            ros::spinOnce();
+        }
 
     } else if (move_type == NEUNZIG_LINKS) {
 
@@ -83,7 +89,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == NEUNZIG_RECHTS) {
 
-        ROS_INFO("Neunzig Rechts! \n");
+        //ROS_INFO("Neunzig Rechts! \n");
 
         motor_command.linear.x = 0.0;
         motor_command.angular.z = -0.1;
@@ -102,9 +108,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     ROS_INFO("Richtungsgeber %i", Richtungsgeber);
     ROS_INFO("Lasercallback rechtsAuswahl: %i", rechtsAuswahl);
-    ROS_INFO("RobotMove Befehl: %s", MoveAusgabe);
+    ROS_INFO("RobotMove Befehl: %S", MoveAusgabe.c_str());
 
-    ros::Rate rateH(3);
+    ros::Rate rateH(1.5);
+    //rateH.sleep();
     laser_msg = *msg;
     std::vector<float> laser_ranges;
     laser_ranges = laser_msg.ranges;
@@ -156,13 +163,13 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     //ROS_INFO("VORNE %f", averageVorne);
     if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
-        averageRechts > 3.5 || averageVorneRechts <= 0 || averageVorneRechts > 3.5) {
+        averageRechts > 3.5) {
         ROS_INFO("STÖRUNG");
         ROS_INFO("averageRechts: %f", averageRechts);
         ROS_INFO("averageLinks: %f", averageLinks);
         ROS_INFO("averageVorne: %f", averageVorne);
         ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
-
+        ros::spinOnce();
     } else {
         ROS_INFO("averageRechts: %f", averageRechts);
         ROS_INFO("averageLinks: %f", averageLinks);
@@ -491,110 +498,116 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         GERADEAUS);                              //Turtlebot fährt dicht zur ersten Wand ab der er sich orientieren kann
             }
         }*/ //if {                             //ab hier an kann der Turtlebot sich orientieren
-        if (averageRechts <=
-            0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+        if (bewegungstyp == 0) {
+            if (averageRechts <=
+                0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
 
-            if (averageVorne <= 0.2) {    //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
+                if (averageVorne <= 0.2) {    //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
 
-                if (averageLinks <= 0.25) {   //Kommentar aus Zeile davor + noch eine Wand dicht auf der Linken Seite
+                    if (averageLinks <=
+                        0.25) {   //Kommentar aus Zeile davor + noch eine Wand dicht auf der Linken Seite
 
-                    ROS_INFO("Erster Switch");
+                        ROS_INFO("Erster Switch");
 
-                    switch (Richtungsgeber) {
+                        switch (Richtungsgeber) {
 
-                        case 0:
+                            case 0:
 
-                            bewegungstyp = 2;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 2;
+                                ros::spinOnce();
+                                break;
 
-                        case 90:
+                            case 90:
 
-                            bewegungstyp = 2;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 2;
+                                ros::spinOnce();
+                                break;
 
-                        case 180:
+                            case 180:
 
-                            bewegungstyp = 2;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 2;
+                                ros::spinOnce();
+                                break;
 
-                        case -90:
+                            case -90:
 
-                            bewegungstyp = 2;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 2;
+                                ros::spinOnce();
+                                break;
 
-                    }  //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
+                        }  //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
 
-                } else {   //Links hat der Turtlebot keine Wand
+                    } else {   //Links hat der Turtlebot keine Wand
 
-                    ROS_INFO("Zweiter Switch");
+                        ROS_INFO("Zweiter Switch");
 
-                    switch (Richtungsgeber) {
+                        switch (Richtungsgeber) {
 
-                        case 0:
+                            case 0:
 
-                            bewegungstyp = 1;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 1;
+                                ros::spinOnce();
+                                break;
 
-                        case 90:
+                            case 90:
 
-                            bewegungstyp = 1;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 1;
+                                ros::spinOnce();
+                                break;
 
-                        case 180:
+                            case 180:
 
-                            bewegungstyp = 1;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 1;
+                                ros::spinOnce();
+                                break;
 
-                        case -90:
+                            case -90:
 
-                            bewegungstyp = 1;
-                            ros::spinOnce();
-                            break;
+                                bewegungstyp = 1;
+                                ros::spinOnce();
+                                break;
 
-                    }                                 //Linksdrehung um 90°
+                        }                                 //Linksdrehung um 90°
+                    }
+
+                } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
+
+                    robot_move(GERADEAUS);
+                    ros::spinOnce();
+
                 }
 
-            } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
-
-                robot_move(GERADEAUS);
-                ros::spinOnce();
-
-            }
-
-        } else {
-            //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
-
-            if (rechtsAuswahl != 0) {
-                ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
-            }
-
-            if (averageVorne <= 0.2) {  //Keine Wand rechts neben sich, aber vor sich
-                ROS_INFO("ZULU  !!!!");
-
-                rechtsAuswahl = 1;
-                bewegungstyp = 3;
-                ros::spinOnce();
-
-            } else if (averageVorne >
-                       0.2) {    //Turtlebot faehrt vorwaerts dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+            } else {
+                //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
 
                 if (rechtsAuswahl != 0) {
                     ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
                 }
 
-                bewegungstyp = 3;
-                rechtsAuswahl = 4;
-                ros::spinOnce();
+                if (averageVorne <= 0.2) {  //Keine Wand rechts neben sich, aber vor sich
+                    ROS_INFO("ZULU  !!!!");
+                    if (rechtsAuswahl == 0) {
+                        rechtsAuswahl = 1;
+                        bewegungstyp = 3;
+                        ros::spinOnce();
+                    }
 
+                } else if (averageVorne >
+                           0.2) {    //Turtlebot faehrt vorwaerts dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+
+                    if (rechtsAuswahl != 0) {
+                        ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
+                    }
+
+                    if (rechtsAuswahl == 0) {
+                        rechtsAuswahl = 4;
+                        bewegungstyp = 3;
+                        ros::spinOnce();
+                    }
+
+                }
             }
-        }
+        } else ros::spinOnce();
     }
 }
 
