@@ -54,17 +54,18 @@ typedef enum _ROBOT_MOVEMENT {
 
 
 bool robot_move(const ROBOT_MOVEMENT move_type) {
-
+    ros::Rate rateMove(5);
     if (move_type == STOP) {
-
+        rateMove.sleep();
         ROS_INFO("STOP! \n");
 
         motor_command.angular.z = 0.0;
         motor_command.linear.x = 0.0;
         motor_command_publisher.publish(motor_command);
 
-    } else if (move_type == GERADEAUS) {
 
+    } else if (move_type == GERADEAUS) {
+        rateMove.sleep();
         ROS_INFO("Geradeaus! \n");
 
         motor_command.angular.z = 0.0;
@@ -72,7 +73,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command_publisher.publish(motor_command);
 
     } else if (move_type == NEUNZIG_LINKS) {
-
+        rateMove.sleep();
         ROS_INFO("Neunzig Links! \n");
 
         motor_command.linear.x = 0.0;
@@ -80,7 +81,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command_publisher.publish(motor_command);
 
     } else if (move_type == NEUNZIG_RECHTS) {
-
+        rateMove.sleep();
         ROS_INFO("Neunzig Rechts! \n");
 
         motor_command.linear.x = 0.0;
