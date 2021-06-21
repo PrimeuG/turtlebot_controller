@@ -527,7 +527,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 koordinatenVorwaerts = 0;
                 rechtsAuswahl = 0;
                 bewegungstyp = 0;
-                halter = 2;
+                halter = 3;
                 //rateH.sleep();
                 ros::spinOnce();
 
