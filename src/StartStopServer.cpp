@@ -23,7 +23,7 @@ sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
 
 
-static int counter = 0;
+static int counter = 1;
 static float aktuelleRichtung = 0; //aktueller Winkel
 static int Richtungsgeber = 0;
 static float averageVorne = 0.0;
@@ -223,7 +223,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     ROS_INFO("Lasercallback rechtsAuswahl: %i", rechtsAuswahl);
     ROS_INFO("RobotMove Befehl: %S", MoveAusgabe.c_str());
 
-    ros::Rate rateH(10);
+    ros::Rate rateH(7);
     //rateH.sleep();
     laser_msg = *msg;
     std::vector<float> laser_ranges;
@@ -603,6 +603,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
     if (halter > 0) {
         halter--;
+        rateH.sleep();
         ros::spinOnce();
     } else if (halter == 0) {
 
