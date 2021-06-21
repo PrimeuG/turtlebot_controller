@@ -23,7 +23,7 @@ sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
 
 
-static int counter = 1;
+static int counter = 0;
 static float aktuelleRichtung = 0; //aktueller Winkel
 static int Richtungsgeber = 0;
 static float averageVorne = 0.0;
@@ -822,15 +822,17 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "node");
     ros::NodeHandle n;
 
-    ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 1, laserCallback);
-    ros::Subscriber odom_subscriber = n.subscribe("/odom", 1, odomCallback);
+    ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 5, laserCallback);
+    ros::Subscriber odom_subscriber = n.subscribe("/odom", 5, odomCallback);
 
-    motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 
 
     while (ros::ok()) {
         geometry_msgs::Twist msg;
-        ros::spin();
+        ros::spinOnce();
     }
+
+    ros::spinOnce();
 
 }
