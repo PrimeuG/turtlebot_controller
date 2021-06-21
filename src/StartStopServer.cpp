@@ -36,6 +36,7 @@ static int koordinatenVorwaerts = 0;
 static std::string MoveAusgabe;
 static int countercounter = 0;
 static int halter = 0;
+static int aktualisierer = 2;
 
 
 float x_fest = 0; //erster X Wert
@@ -132,7 +133,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 }
 
             case 180:
-               // ROS_INFO("AKTUELLE RICHTUNG CASE 180 %f", aktuelleRichtung);
+                // ROS_INFO("AKTUELLE RICHTUNG CASE 180 %f", aktuelleRichtung);
                 while (aktuelleRichtung > 179) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
@@ -164,7 +165,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 }
 
             case -90:
-               // ROS_INFO("AKTUELLE RICHTUNG CASE -90 %f", aktuelleRichtung);
+                // ROS_INFO("AKTUELLE RICHTUNG CASE -90 %f", aktuelleRichtung);
                 while (aktuelleRichtung > -91 && aktuelleRichtung < -89) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
@@ -194,7 +195,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == NEUNZIG_LINKS) {
 
-       // ROS_INFO("Neunzig Links! \n");
+        // ROS_INFO("Neunzig Links! \n");
 
         motor_command.linear.x = 0.0;
         motor_command.angular.z = 0.1;
@@ -367,7 +368,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     }
 
                     if (aktuelleRichtung < -5) {
-                       // ROS_INFO("aktuelle Richtung ist richtig mies! %f", aktuelleRichtung);
+                        // ROS_INFO("aktuelle Richtung ist richtig mies! %f", aktuelleRichtung);
                     }
 
                     Richtungsgeber = 180;
@@ -516,6 +517,8 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     rechtsAuswahl = 0;
                     koordinatenVorwaerts = 0;
                     bewegungstyp = 0;
+                    halter = 3;
+                    aktualisierer = 2;
                     ros::spinOnce();
                 }
 
@@ -523,7 +526,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     robot_move(GERADEAUS);
                     ros::spinOnce();
                 }
-
+                aktualisierer = 2;
                 koordinatenVorwaerts = 0;
                 rechtsAuswahl = 0;
                 bewegungstyp = 0;
@@ -637,7 +640,8 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 ROS_INFO("averageRechts: %f", averageRechts);
                 ROS_INFO("averageLinks: %f", averageLinks);
                 ROS_INFO("averageVorne: %f", averageVorne);
-                if (averageRechts <=0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+                if (averageRechts <=
+                    0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
                     ROS_INFO("RECHTS KLEINER ALS 0.275");
                     if (averageVorne <= 0.2) {    //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
                         ROS_INFO("VORNE KLEINER ALS 0.2");
@@ -715,35 +719,41 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     }
 
                 } else {
+                    if (aktualisierer > 0) {
+                        aktualisierer--;
+                        ROS_INFO("aktualisierer MINUS");
+                        ros::spinOnce();
+                    } else if (aktualisierer == 0) {
 
-                    ROS_INFO("RECHTS GROESSER ALS 0.275");
-                    //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
-
-                    if (rechtsAuswahl != 0) {
-                        ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
-                    }
-
-                    if (averageVorne <= 0.2) {  //Keine Wand rechts neben sich, aber vor sich
-                        ROS_INFO("RECHTSDREHUNG DANN GERADE");
-                        if (rechtsAuswahl == 0) {
-                            rechtsAuswahl = 1;
-                            bewegungstyp = 3;
-                            ros::spinOnce();
-                        }
-
-                    } else if (averageVorne >
-                               0.2) {    //Turtlebot faehrt vorwaerts dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                        ROS_INFO("RECHTS GROESSER ALS 0.275");
+                        //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
 
                         if (rechtsAuswahl != 0) {
                             ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
                         }
-                        ROS_INFO("GERADE, RECHTSDREHUNG DANN GERADE");
-                        if (rechtsAuswahl == 0) {
-                            rechtsAuswahl = 4;
-                            bewegungstyp = 3;
-                            ros::spinOnce();
-                        }
 
+                        if (averageVorne <= 0.2) {  //Keine Wand rechts neben sich, aber vor sich
+                            ROS_INFO("RECHTSDREHUNG DANN GERADE");
+                            if (rechtsAuswahl == 0) {
+                                rechtsAuswahl = 1;
+                                bewegungstyp = 3;
+                                ros::spinOnce();
+                            }
+
+                        } else if (averageVorne >
+                                   0.2) {    //Turtlebot faehrt vorwaerts dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+
+                            if (rechtsAuswahl != 0) {
+                                ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
+                            }
+                            ROS_INFO("GERADE, RECHTSDREHUNG DANN GERADE");
+                            if (rechtsAuswahl == 0) {
+                                rechtsAuswahl = 4;
+                                bewegungstyp = 3;
+                                ros::spinOnce();
+                            }
+
+                        }
                     }
                 }
             } //else ros::spinOnce();
@@ -801,6 +811,8 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
 
     aktuelleRichtung = yaw * RAD2DEG;
 
+
+    ros::spinOnce();
 }
 
 
