@@ -79,7 +79,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         switch (Richtungsgeber) {
 
             case 0:
-
+                ROS_INFO("AKTUELLE RICHTUNG CASE 0 %f", aktuelleRichtung);
                 while (aktuelleRichtung > -1 && aktuelleRichtung < 1) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
@@ -105,6 +105,8 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             case 90:
 
+
+                ROS_INFO("AKTUELLE RICHTUNG CASE 90 %f", aktuelleRichtung);
                 while (aktuelleRichtung < 91 && aktuelleRichtung > 89) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
@@ -129,7 +131,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 }
 
             case 180:
-
+                ROS_INFO("AKTUELLE RICHTUNG CASE 180 %f", aktuelleRichtung);
                 while (aktuelleRichtung > 179) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
@@ -161,7 +163,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 }
 
             case -90:
-
+                ROS_INFO("AKTUELLE RICHTUNG CASE -90 %f", aktuelleRichtung);
                 while (aktuelleRichtung > -91 && aktuelleRichtung < -89) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
