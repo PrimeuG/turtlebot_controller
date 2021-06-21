@@ -600,7 +600,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
         ros::spinOnce();
     }
-
+    ROS_INFO("Halter: %i", halter);
     if (halter > 0) {
         halter--;
         rateH.sleep();
