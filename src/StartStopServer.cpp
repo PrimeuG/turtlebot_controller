@@ -68,7 +68,126 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
     } else if (move_type == GERADEAUS) {
 
+        if (averageVorne <= 0.14) {
+            motor_command.angular.z = 0.0;
+            motor_command.linear.x = 0.0;
+            motor_command_publisher.publish(motor_command);
+            ros::spinOnce();
+        }
+
         //ROS_INFO("Geradeaus! \n");
+        switch (Richtungsgeber) {
+
+            case 0:
+
+                while (aktuelleRichtung > -1 && aktuelleRichtung < 1) {
+                    motor_command.angular.z = 0.0;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+                }
+
+                while (aktuelleRichtung <= -1) {
+                    motor_command.angular.z = 0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+                while (aktuelleRichtung >= 1) {
+                    motor_command.angular.z = -0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+            case 90:
+
+                while (aktuelleRichtung < 91 && aktuelleRichtung > 89) {
+                    motor_command.angular.z = 0.0;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+                }
+
+                while (aktuelleRichtung >= 91) {
+                    motor_command.angular.z = 0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+                while (aktuelleRichtung <= 89) {
+                    motor_command.angular.z = -0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+            case 180:
+
+                while (aktuelleRichtung > 179) {
+                    motor_command.angular.z = 0.0;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+                }
+
+                while(aktuelleRichtung > -1){
+                    motor_command.angular.z = 0.0;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+                }
+
+                while (aktuelleRichtung <= 179 && aktuelleRichtung > 100) {
+                    motor_command.angular.z = 0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+                while (aktuelleRichtung <= -1) {
+                    motor_command.angular.z = -0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+            case -90:
+
+                while (aktuelleRichtung > -91 && aktuelleRichtung < -89) {
+                    motor_command.angular.z = 0.0;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+                }
+
+                while (aktuelleRichtung >= -91) {
+                    motor_command.angular.z = 0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+                while (aktuelleRichtung <= -89) {
+                    motor_command.angular.z = -0.01;
+                    motor_command.linear.x = 0.05;
+                    motor_command_publisher.publish(motor_command);
+                    ros::spinOnce();
+
+                }
+
+
+        }
+
         if (averageVorne > 0.14) {
             motor_command.angular.z = 0.0;
             motor_command.linear.x = 0.05;
@@ -505,7 +624,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             ros::spinOnce();
         }
 
-        if(countercounter == 2){
+        if (countercounter == 2) {
             counter = 1;
             ros::spinOnce();
         }
