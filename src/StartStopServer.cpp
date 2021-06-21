@@ -34,6 +34,7 @@ static int rechtsAuswahl = 0;
 static int bewegungstyp = 0;  //Bewegungstyp 0 Laser, Typ 1 90 Links, Typ 2 180 Grad, Typ 3 Rechtskurve, Typ 4 Drehung fuer Anfahrt
 static int koordinatenVorwaerts = 0;
 static std::string MoveAusgabe;
+static int countercounter = 0;
 
 
 float x_fest = 0; //erster X Wert
@@ -434,6 +435,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
                     Richtungsgeber = 90;
                     bewegungstyp = 0;
+                    countercounter = 2;
                     ros::spinOnce();
                     break;
 
@@ -446,6 +448,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
                     Richtungsgeber = 180;
                     bewegungstyp = 0;
+                    countercounter = 2;
                     ros::spinOnce();
                     break;
 
@@ -463,6 +466,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
                     Richtungsgeber = -90;
                     bewegungstyp = 0;
+                    countercounter = 2;
                     ros::spinOnce();
                     break;
 
@@ -475,6 +479,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
                     Richtungsgeber = 0;
                     bewegungstyp = 0;
+                    countercounter = 2;
                     ros::spinOnce();
                     break;
 
@@ -484,18 +489,27 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ros::spinOnce();
     }
     if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
-        while (averageVorne > 0.2) {
-            robot_move(GERADEAUS);
-            ros::spinOnce();
-        } if (averageVorne <= 0.2) {
+
+        if (countercounter == 0) {
+            while (averageVorne > 0.2) {
+                robot_move(GERADEAUS);
+                ros::spinOnce();
+            }
+            if (averageVorne <= 0.2) {
+                countercounter = 1;
+            }
+        }
+
+        if (countercounter == 1) {
             bewegungstyp = 4;
             ros::spinOnce();
-        } else {
-            ROS_INFO("Fehler bei Anfahrt");
+        }
+
+        if(countercounter == 2){
+            counter = 1;
             ros::spinOnce();
         }
-        //counter = 1;
-        ros::spinOnce();
+
 
     } else if (counter == 1) {                             //ab hier an kann der Turtlebot sich orientieren
         if (bewegungstyp == 0) {
@@ -610,7 +624,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         } else ros::spinOnce();
     }
 }
-
 
 
 void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
