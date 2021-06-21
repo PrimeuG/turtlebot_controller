@@ -115,7 +115,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 }
 
                 while (aktuelleRichtung >= 91) {
-                    motor_command.angular.z = 0.01;
+                    motor_command.angular.z = -0.01;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
@@ -123,7 +123,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 }
 
                 while (aktuelleRichtung <= 89) {
-                    motor_command.angular.z = -0.01;
+                    motor_command.angular.z = 0.01;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
@@ -139,7 +139,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                     ros::spinOnce();
                 }
 
-                while(aktuelleRichtung > -1){
+                while(aktuelleRichtung > -179){
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
@@ -154,7 +154,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
                 }
 
-                while (aktuelleRichtung <= -1) {
+                while (aktuelleRichtung <= -179) {
                     motor_command.angular.z = -0.01;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
@@ -171,7 +171,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung >= -91) {
+                while (aktuelleRichtung <= -91) {
                     motor_command.angular.z = 0.01;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
@@ -179,7 +179,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
                 }
 
-                while (aktuelleRichtung <= -89) {
+                while (aktuelleRichtung >= -89) {
                     motor_command.angular.z = -0.01;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
@@ -190,16 +190,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
         }
 
-        if (averageVorne > 0.14) {
-            motor_command.angular.z = 0.0;
-            motor_command.linear.x = 0.05;
-            motor_command_publisher.publish(motor_command);
-        } else {
-            motor_command.angular.z = 0.0;
-            motor_command.linear.x = 0.0;
-            motor_command_publisher.publish(motor_command);
-            ros::spinOnce();
-        }
+
 
     } else if (move_type == NEUNZIG_LINKS) {
 
@@ -222,7 +213,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         return false;
     }
 
-    usleep(10);
+    //usleep(10);
     return true;
 }
 
@@ -232,7 +223,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     ROS_INFO("Lasercallback rechtsAuswahl: %i", rechtsAuswahl);
     ROS_INFO("RobotMove Befehl: %S", MoveAusgabe.c_str());
 
-    ros::Rate rateH(1.5);
+    ros::Rate rateH(10);
     //rateH.sleep();
     laser_msg = *msg;
     std::vector<float> laser_ranges;
@@ -265,11 +256,11 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
     }
 
-    for (int z = 265; z < 276; z++) {
+    for (int z = 270; z < 276; z++) {
         summeRechts += laser_ranges[z];
 
         if (z == 275) {
-            averageRechts = summeRechts / 11.0;
+            averageRechts = summeRechts / 6.0;
         }
     }
 
@@ -528,7 +519,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     ros::spinOnce();
                 }
 
-                while (weg < 0.13 && weg > -0.13) {
+                while (weg < 0.16 && weg > -0.16) {
                     robot_move(GERADEAUS);
                     ros::spinOnce();
                 }
@@ -612,11 +603,11 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
 
         if (countercounter == 0) {
-            while (averageVorne > 0.2) {
+            while (averageVorne > 0.19) {
                 robot_move(GERADEAUS);
                 ros::spinOnce();
             }
-            if (averageVorne <= 0.2) {
+            if (averageVorne <= 0.19) {
                 countercounter = 1;
             }
         }
@@ -805,10 +796,12 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "node");
     ros::NodeHandle n;
 
-    ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, laserCallback);
-    ros::Subscriber odom_subscriber = n.subscribe("/odom", 10, odomCallback);
+    ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 1, laserCallback);
+    ros::Subscriber odom_subscriber = n.subscribe("/odom", 1, odomCallback);
 
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+
+
 
     while (ros::ok()) {
         geometry_msgs::Twist msg;
