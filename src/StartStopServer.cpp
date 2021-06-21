@@ -544,7 +544,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
                     }
-
+                    int kaese = 0;
                     Richtungsgeber = 90;
                     bewegungstyp = 0;
                     countercounter = 2;
