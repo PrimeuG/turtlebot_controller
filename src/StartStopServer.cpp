@@ -82,24 +82,24 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             case 0:
                 //ROS_INFO("AKTUELLE RICHTUNG CASE 0 %f", aktuelleRichtung);
-                while (aktuelleRichtung > -1 && aktuelleRichtung < 1) {
+                while (aktuelleRichtung > -0.5 && aktuelleRichtung < 0.5) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung <= -1) {
-                    motor_command.angular.z = 0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung <= -0.5) {
+                    motor_command.angular.z = 0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
                 }
 
-                while (aktuelleRichtung >= 1) {
-                    motor_command.angular.z = -0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung >= 0.5) {
+                    motor_command.angular.z = -0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
@@ -109,24 +109,24 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
 
                 //ROS_INFO("AKTUELLE RICHTUNG CASE 90 %f", aktuelleRichtung);
-                while (aktuelleRichtung < 91 && aktuelleRichtung > 89) {
+                while (aktuelleRichtung < 90.5 && aktuelleRichtung > 89.5) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung >= 91) {
-                    motor_command.angular.z = -0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung >= 90.5) {
+                    motor_command.angular.z = -0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
                 }
 
-                while (aktuelleRichtung <= 89) {
-                    motor_command.angular.z = 0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung <= 89.5) {
+                    motor_command.angular.z = 0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
@@ -134,31 +134,31 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             case 180:
                 // ROS_INFO("AKTUELLE RICHTUNG CASE 180 %f", aktuelleRichtung);
-                while (aktuelleRichtung > 179) {
+                while (aktuelleRichtung > 179.5) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung > -179) {
+                while (aktuelleRichtung > -179.5) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung <= 179 && aktuelleRichtung > 100) {
-                    motor_command.angular.z = 0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung <= 179.5 && aktuelleRichtung > 100) {
+                    motor_command.angular.z = 0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
                 }
 
-                while (aktuelleRichtung <= -179) {
-                    motor_command.angular.z = -0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung <= -179.5) {
+                    motor_command.angular.z = -0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
@@ -166,24 +166,24 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
             case -90:
                 // ROS_INFO("AKTUELLE RICHTUNG CASE -90 %f", aktuelleRichtung);
-                while (aktuelleRichtung > -91 && aktuelleRichtung < -89) {
+                while (aktuelleRichtung > -90.5 && aktuelleRichtung < -89.5) {
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.05;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung <= -91) {
-                    motor_command.angular.z = 0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung <= -90.5) {
+                    motor_command.angular.z = 0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
                 }
 
-                while (aktuelleRichtung >= -89) {
-                    motor_command.angular.z = -0.01;
-                    motor_command.linear.x = 0.05;
+                while (aktuelleRichtung >= -89.5) {
+                    motor_command.angular.z = -0.02;
+                    motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
@@ -447,7 +447,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     ros::spinOnce();
                 }
 
-                while (weg < 0.13 && weg > -0.13) {
+                while (weg < 0.12 && weg > -0.12) {
                     robot_move(GERADEAUS);
                     ros::spinOnce();
                 }
@@ -517,7 +517,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     rechtsAuswahl = 0;
                     koordinatenVorwaerts = 0;
                     bewegungstyp = 0;
-                    halter = 3;
+                    halter = 5;
                     aktualisierer = 2;
                     ros::spinOnce();
                 }
@@ -530,7 +530,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 koordinatenVorwaerts = 0;
                 rechtsAuswahl = 0;
                 bewegungstyp = 0;
-                halter = 3;
+                halter = 5;
                 //rateH.sleep();
                 ros::spinOnce();
 
@@ -605,6 +605,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     }
     //ROS_INFO("Halter: %i", halter);
     if (halter > 0) {
+        ROS_INFO("Halter: %i", halter);
         halter--;
         rateH.sleep();
         ros::spinOnce();
