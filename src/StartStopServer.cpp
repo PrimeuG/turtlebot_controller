@@ -276,8 +276,9 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
 
     //ROS_INFO("VORNE %f", averageVorne);
-    if (averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
-        averageRechts > 3.5) {
+    if (false) {
+        //averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
+        //        averageRechts > 3.5
         ROS_INFO("STÖRUNG");
         ROS_INFO("averageRechts: %f", averageRechts);
         ROS_INFO("averageLinks: %f", averageLinks);
