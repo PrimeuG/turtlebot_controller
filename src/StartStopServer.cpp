@@ -84,7 +84,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 //ROS_INFO("AKTUELLE RICHTUNG CASE 0 %f", aktuelleRichtung);
                 while (aktuelleRichtung > -0.5 && aktuelleRichtung < 0.5) {
                     motor_command.angular.z = 0.0;
-                    motor_command.linear.x = 0.05;
+                    motor_command.linear.x = 0.045;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
@@ -111,7 +111,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 //ROS_INFO("AKTUELLE RICHTUNG CASE 90 %f", aktuelleRichtung);
                 while (aktuelleRichtung < 90.5 && aktuelleRichtung > 89.5) {
                     motor_command.angular.z = 0.0;
-                    motor_command.linear.x = 0.05;
+                    motor_command.linear.x = 0.045;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
@@ -136,14 +136,14 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 // ROS_INFO("AKTUELLE RICHTUNG CASE 180 %f", aktuelleRichtung);
                 while (aktuelleRichtung > 179.5) {
                     motor_command.angular.z = 0.0;
-                    motor_command.linear.x = 0.05;
+                    motor_command.linear.x = 0.045;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
                 while (aktuelleRichtung > -179.5) {
                     motor_command.angular.z = 0.0;
-                    motor_command.linear.x = 0.05;
+                    motor_command.linear.x = 0.045;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
@@ -168,7 +168,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
                 // ROS_INFO("AKTUELLE RICHTUNG CASE -90 %f", aktuelleRichtung);
                 while (aktuelleRichtung > -90.5 && aktuelleRichtung < -89.5) {
                     motor_command.angular.z = 0.0;
-                    motor_command.linear.x = 0.05;
+                    motor_command.linear.x = 0.045;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
@@ -283,6 +283,11 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("averageLinks: %f", averageLinks);
         ROS_INFO("averageVorne: %f", averageVorne);
         ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
+
+        while(averageVorne > 3){
+            robot_move(GERADEAUS);
+        }
+
         ros::spinOnce();
     } else {
         /*ROS_INFO("averageRechts: %f", averageRechts);
@@ -641,6 +646,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                 ROS_INFO("averageRechts: %f", averageRechts);
                 ROS_INFO("averageLinks: %f", averageLinks);
                 ROS_INFO("averageVorne: %f", averageVorne);
+
                 if (averageRechts <=
                     0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
                     ROS_INFO("RECHTS KLEINER ALS 0.275");
