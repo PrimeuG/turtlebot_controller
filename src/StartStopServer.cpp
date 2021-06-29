@@ -284,10 +284,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         ROS_INFO("averageVorne: %f", averageVorne);
         ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
 
-        while(averageVorne > 3){
-            robot_move(GERADEAUS);
-        }
-
         ros::spinOnce();
     } else {
         /*ROS_INFO("averageRechts: %f", averageRechts);
