@@ -16,34 +16,32 @@
 #define RAD2DEG 57.295779513
 using namespace std_msgs;
 
-//https://github.com/cohnsted1/TurtleBot--MazeSolver/blob/main/src/new_main.cpp
-
 ros::Publisher motor_command_publisher;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
 
 
-static int counter = 0;
+static int counter = 0; //Countervariable zum festlegen das Roboter vom Start aus erste Wand erreicht hat, wird auf 1 gesetzt sobald dies geschehen ist
 static float aktuelleRichtung = 0; //aktueller Winkel
-static int Richtungsgeber = 0;
-static float averageVorne = 0.0;
-static float averageLinks = 0.0;
-static float averageRechts = 0.0;
-static float averageVorneRechts = 0.0;
-static int rechtsAuswahl = 0;
+static int Richtungsgeber = 0;  //Variable zum setzen der letzten Ausrichtungsposition, kann 0, 90, 180 oder -90 sein
+static float averageVorne = 0.0; //Durchschnitt der Laserwerte in einem gewissen Radius vor dem Roboter
+static float averageLinks = 0.0; //Durchschnitt der Laserwerte in einem gewissen Radius links neben dem Roboter
+static float averageRechts = 0.0; //Durchschnitt der Laserwerte in einem gewissen Radius rechts neben dem Roboter
+static float averageVorneRechts = 0.0; //Durchschnitt der Laserwerte in einem gewissen Radius vorne Rechts neben dem Roboter
+static int rechtsAuswahl = 0; //Variable zum feststellen ob geradeaus rechts geradeaus oder rechts geradeaus gefahren werden soll, wird auf 4 gesetzt zu beginn wenn erster Fall auf 1 wenn zweiter Fall
 static int bewegungstyp = 0;  //Bewegungstyp 0 Laser, Typ 1 90 Links, Typ 2 180 Grad, Typ 3 Rechtskurve, Typ 4 Drehung fuer Anfahrt
-static int koordinatenVorwaerts = 0;
+static int koordinatenVorwaerts = 0; //legt Startpunkt zur Wegberechnung fest wenn Wert von 0 auf 1 springt
 static std::string MoveAusgabe;
-static int countercounter = 0;
-static int halter = 0;
-static int aktualisierer = 2;
+static int countercounter = 0; //Variable zum Bewegungsablauf koordinieren, 0 heißt geraudeaus, 1 linksdrehung und 2 ist abschluss
+static int halter = 0; //Variable zum verzögern der Messwerte
+static int aktualisierer = 2; //Variable zum verzögern der Messwerte
 
 
 float x_fest = 0; //erster X Wert
 float y_fest = 0; //erster Y Wert
 float x_aktuell = 0; //aktuellste X Position
 float y_aktuell = 0;//aktuellste X Position
-float weg = 0;
+float weg = 0; //Weg von Koordinaten berechnet zur Kontrolle wie weit der Turtlebot gefahren ist
 
 
 // Define the robot direction of movement
