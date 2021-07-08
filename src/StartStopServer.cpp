@@ -19,7 +19,7 @@ using namespace std_msgs;
 ros::Publisher motor_command_publisher;
 sensor_msgs::LaserScan laser_msg;
 geometry_msgs::Twist motor_command;
-
+//Zeile 34 und 59 auskommentiert!!!
 
 static int counter = 0; //Countervariable zum festlegen das Roboter vom Start aus erste Wand erreicht hat, wird auf 1 gesetzt sobald dies geschehen ist
 static float aktuelleRichtung = 0; //aktueller Winkel
@@ -31,7 +31,7 @@ static float averageVorneRechts = 0.0; //Durchschnitt der Laserwerte in einem ge
 static int rechtsAuswahl = 0; //Variable zum feststellen ob geradeaus rechts geradeaus oder rechts geradeaus gefahren werden soll, wird auf 4 gesetzt zu beginn wenn erster Fall auf 1 wenn zweiter Fall
 static int bewegungstyp = 0;  //Bewegungstyp 0 Laser, Typ 1 90 Links, Typ 2 180 Grad, Typ 3 Rechtskurve, Typ 4 Drehung fuer Anfahrt
 static int koordinatenVorwaerts = 0; //legt Startpunkt zur Wegberechnung fest wenn Wert von 0 auf 1 springt
-static std::string MoveAusgabe;
+//static std::string MoveAusgabe;
 static int countercounter = 0; //Variable zum Bewegungsablauf koordinieren, 0 heißt geraudeaus, 1 linksdrehung und 2 ist abschluss
 static int halter = 0; //Variable zum verzögern der Messwerte
 static int aktualisierer = 2; //Variable zum verzögern der Messwerte
@@ -44,7 +44,7 @@ float y_aktuell = 0;//aktuellste X Position
 float weg = 0; //Weg von Koordinaten berechnet zur Kontrolle wie weit der Turtlebot gefahren ist
 
 
-// Define the robot direction of movement
+// Richtungen die der Roboter waehlen kann
 typedef enum _ROBOT_MOVEMENT {
     STOP = 0,
     GERADEAUS,
@@ -54,21 +54,21 @@ typedef enum _ROBOT_MOVEMENT {
 
 } ROBOT_MOVEMENT;
 
-
+//Bewegungsmethode des Roboters
 bool robot_move(const ROBOT_MOVEMENT move_type) {
-    MoveAusgabe = move_type;
-    if (move_type == STOP) {
+    //MoveAusgabe = move_type;
+    if (move_type == STOP) { //Stopp Bewegungsdefinition des Roboters
 
         ROS_INFO("STOP! \n");
 
-        motor_command.angular.z = 0.0;
+        motor_command.angular.z = 0.0; //Geschwindigkeit wird auf 0 gesetzt und Befehl wird gepublished
         motor_command.linear.x = 0.0;
         motor_command_publisher.publish(motor_command);
 
 
-    } else if (move_type == GERADEAUS) {
+    } else if (move_type == GERADEAUS) {    //Falls Befehl GERADEAUS lautet benutzt er diese If Bedingung
 
-        if (averageVorne <= 0.14) {
+        if (averageVorne <= 0.14) {         //Notbremse greift wenn Abstand zur Wand vor dem Turtlebot kleiner als 0.14 ist, gibt dann Befehl zum anhalten
             motor_command.angular.z = 0.0;
             motor_command.linear.x = 0.0;
             motor_command_publisher.publish(motor_command);
@@ -76,34 +76,34 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         }
 
         //ROS_INFO("Geradeaus! \n");
-        switch (Richtungsgeber) {
-
+        switch (Richtungsgeber) {           //Bezieht den Richtungsgeber ein um festzustellen in welche Richtung der Turtlebot orientiert ist
+                                            //nutzt dann je nach Richtungsgeberwert andere Werte um dafuer zu sorgen, dass der Roboter sich nicht vom Kurs entfernt
             case 0:
                 //ROS_INFO("AKTUELLE RICHTUNG CASE 0 %f", aktuelleRichtung);
-                while (aktuelleRichtung > -0.5 && aktuelleRichtung < 0.5) {
+                while (aktuelleRichtung > -0.5 && aktuelleRichtung < 0.5) { //solange die aktuelle Richtung innerhalb von 0,5 Grad zur Zielrichtung liegt faehrt der Roboter geraudeaus
                     motor_command.angular.z = 0.0;
                     motor_command.linear.x = 0.045;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
                 }
 
-                while (aktuelleRichtung <= -0.5) {
-                    motor_command.angular.z = 0.02;
+                while (aktuelleRichtung <= -0.5) {    //Liegt die tatsaechliche Richtung von der Zielrichtung weiter entfernt als -0.5 Grad nach Rechts, dreht sich der Roboter
+                    motor_command.angular.z = 0.02;    //waehrend er faehrt um 0,02  nach Links waehrenddessen
                     motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
                 }
 
-                while (aktuelleRichtung >= 0.5) {
-                    motor_command.angular.z = -0.02;
+                while (aktuelleRichtung >= 0.5) {    //Liegt die tatsaechliche Richtung von der Zielrichtung weiter entfernt als 0.5 Grad nach Links, dreht sich der Roboter
+                    motor_command.angular.z = -0.02; //waehrend er faehrt um -0,02  nach Rechts waehrenddessen
                     motor_command.linear.x = 0.02;
                     motor_command_publisher.publish(motor_command);
                     ros::spinOnce();
 
                 }
 
-            case 90:
+            case 90:  //Aufgabe Analog zu case 0
 
 
                 //ROS_INFO("AKTUELLE RICHTUNG CASE 90 %f", aktuelleRichtung);
@@ -130,7 +130,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
                 }
 
-            case 180:
+            case 180:  //Aufgabe Analog zu case 0
                 // ROS_INFO("AKTUELLE RICHTUNG CASE 180 %f", aktuelleRichtung);
                 while (aktuelleRichtung > 179.5) {
                     motor_command.angular.z = 0.0;
@@ -162,7 +162,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
 
                 }
 
-            case -90:
+            case -90:  //Aufgabe Analog zu case 0
                 // ROS_INFO("AKTUELLE RICHTUNG CASE -90 %f", aktuelleRichtung);
                 while (aktuelleRichtung > -90.5 && aktuelleRichtung < -89.5) {
                     motor_command.angular.z = 0.0;
@@ -191,7 +191,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         }
 
 
-    } else if (move_type == NEUNZIG_LINKS) {
+    } else if (move_type == NEUNZIG_LINKS) { //Falls Move Befehl NEUNZIG_LINKS ist dreht er sich mit 0,1 Rad
 
         // ROS_INFO("Neunzig Links! \n");
 
@@ -199,7 +199,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.angular.z = 0.1;
         motor_command_publisher.publish(motor_command);
 
-    } else if (move_type == NEUNZIG_RECHTS) {
+    } else if (move_type == NEUNZIG_RECHTS) {  //Falls Move Befehl NEUNZIG_LINKS ist dreht er sich mit 0,1 Rad
 
         //ROS_INFO("Neunzig Rechts! \n");
 
@@ -207,7 +207,7 @@ bool robot_move(const ROBOT_MOVEMENT move_type) {
         motor_command.angular.z = -0.1;
         motor_command_publisher.publish(motor_command);
 
-    } else {
+    } else { //Fehler abfangen falls Move Command falsch gesendet wird
         ROS_INFO("Move type wrong! \n");
         return false;
     }
@@ -228,25 +228,25 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     std::vector<float> laser_ranges;
     laser_ranges = laser_msg.ranges;
 
-
+    //Float Werte von den eingelesen Laserwerten, welche aufaddiert werden fuer die jeweilige Richtung
     float summeVorne = 0.0;
     float summeLinks = 0.0;
     float summeRechts = 0.0;
     float summeVorneRechts = 0.0;
 
-
+    //fasst Werte von 0 bis 5 Grad ins Array
     for (int z = 0; z < 6; z++) {
         summeVorne += laser_ranges[z];
     }
-
+    //fasst Werte von 355 bis 359 Grad ins Array
     for (int k = 355; k < 360; k++) {
         summeVorne += laser_ranges[k];
-
+        //Berechnet den Durchschnitt der eingelesenen Laserwerte
         if (k == 359) {
             averageVorne = summeVorne / 11.0;
         }
     }
-
+    //Analog zur Berechnung von summeVorne bzw. averageVorne
     for (int z = 85; z < 96; z++) {
         summeLinks += laser_ranges[z];
 
@@ -254,7 +254,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             averageLinks = summeLinks / 11.0;
         }
     }
-
+    //Analog zur Berechnung von summeVorne bzw. averageVorne
     for (int z = 270; z < 276; z++) {
         summeRechts += laser_ranges[z];
 
@@ -263,7 +263,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         }
     }
 
-
+    //Analog zur Berechnung von summeVorne bzw. averageVorne
     for (int z = 340; z < 346; z++) {
         summeVorneRechts += laser_ranges[z];
 
@@ -274,7 +274,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
 
     //ROS_INFO("VORNE %f", averageVorne);
-    if (false) {
+    if (false) {        //Kontrollbedingung fuer die Werte, jedoch unpraktikabel da wenn Zielblock entfernt wird Infitinity ausgegeben wird, deswegen aktuell auf false gesetzt
         //averageVorne <= 0 || averageVorne > 3.5 || averageLinks <= 0 || averageLinks > 3.5 || averageRechts <= 0 ||
         //        averageRechts > 3.5
         ROS_INFO("STÖRUNG");
@@ -291,27 +291,27 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         //ROS_INFO("averageVorneRechts: %f", averageVorneRechts);
         //ROS_INFO("Counter: %i", counter);
 
-
+        //Wenn Beweguungstyp auf 1 gesetzt wurde geht er hier rein
         if (bewegungstyp == 1) {
-
+            //Richtungsgeber ist wieder ausschlaggebend
             switch (Richtungsgeber) {
 
                 case 0:
 
                     //ROS_INFO("HALLO: %f", aktuelleRichtung);
 
-                    while (aktuelleRichtung < 90.0) {
+                    while (aktuelleRichtung < 90.0) { //Solange die gewaehlte Richtung, in diesem Fall 90 Grad nicht erreicht ist, dreht sich der Roboter nach Links
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
                     }
 
-                    Richtungsgeber = 90;
-                    bewegungstyp = 0;
+                    Richtungsgeber = 90;           //Wenn gewuenschte Richtung erreicht ist wird der Richtungsgeber auf den entsprechenden Wert gesetzt
+                    bewegungstyp = 0;               //Bewegungstyp wurde auf 0 gesetzt
                     ros::spinOnce();
                     break;
 
                 case 90:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung < 180 && aktuelleRichtung > 0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -323,7 +323,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case 180:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung > 0.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -340,7 +340,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case -90:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung < 0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -355,13 +355,13 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
         }
 
-
+        //Wenn Bewgungstyp 2 ist wird diese Bedingung erfuellt
         if (bewegungstyp == 2) {
-
+            //Richtungsgeber ist entscheidend, Switch wird nach passendem case druchsucht
             switch (Richtungsgeber) {
 
                 case 0:
-
+                    //Solange aktuelle Richtung kleiner als 180 Grad ist, und groesser als -45 Grad dreht er sich links
                     while (aktuelleRichtung < 180.0 && aktuelleRichtung > -45.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
