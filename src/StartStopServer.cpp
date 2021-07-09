@@ -786,7 +786,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
         x_fest = (msg->pose.pose.position.x);
 
     }
-
+    //Solange rechtsauswahl 2 oder 4 ist wird diese Bedingung erfuellt
     if (rechtsAuswahl == 4 || rechtsAuswahl == 2) { //setzen des 1. Y und X Wertes
         koordinatenVorwaerts = 1;
         x_aktuell = (msg->pose.pose.position.x); //setzen der aktuellen X und Y Positionen
@@ -797,7 +797,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
                    pow((y_aktuell - y_fest), 2)); //Formel zum berechnen der Entfernung zwischen 2 Punkten
 
     }
-
+    //zuruecksetzen des Weges auf 0 sobald nicht mehr benoetigt
     if (rechtsAuswahl != 4 && rechtsAuswahl != 2) {
         weg = 0;
     }
@@ -808,19 +808,18 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
             msg->pose.pose.orientation.z,
             msg->pose.pose.orientation.w);
 
-    // 3x3 Rotation matrix from quaternion
+    // 3x3 Rotations Matrix von Quaternion
     tf2::Matrix3x3 m(q);
 
-    // Roll Pitch and Yaw from rotation matrix
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
 
-    // Output the measure
+    // Ausgabe der verschiedenen Werte
     ROS_INFO("Received odom in '%s' frame : X: %.2f Y: %.2f Z: %.2f - R: %.2f P: %.2f Y: %.2f",
              msg->header.frame_id.c_str(),
              tx, ty, tz,
              roll * RAD2DEG, pitch * RAD2DEG, yaw * RAD2DEG);
-
+    //Umwandlung der RAD Werte in GRAD (RAD2DEG ist definiert am Anfang als Pi)
     aktuelleRichtung = yaw * RAD2DEG;
 
 
@@ -832,14 +831,15 @@ int main(int argc, char **argv) {
     // Initialize a ROS node
 
     ros::init(argc, argv, "node");
+    //NodeHandle
     ros::NodeHandle n;
-
+    //Laser und Odom subscriber
     ros::Subscriber laser_subscriber = n.subscribe<sensor_msgs::LaserScan>("/scan", 5, laserCallback);
     ros::Subscriber odom_subscriber = n.subscribe("/odom", 5, odomCallback);
-
+    //advertiser fuer /cmd_vel topic
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 
-
+    //solange erfuellt ros::spinOnce
     while (ros::ok()) {
         geometry_msgs::Twist msg;
         ros::spinOnce();
