@@ -370,14 +370,14 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     if (aktuelleRichtung < -5) {
                         // ROS_INFO("aktuelle Richtung ist richtig mies! %f", aktuelleRichtung);
                     }
-
+                    //der Richtungsgeber wird entsprechend der 180 Grad Drehung (von 0 Grad aus) auf 180 gesetzt, sowie der Bewegungstyp auf 0
                     Richtungsgeber = 180;
                     bewegungstyp = 0;
                     ros::spinOnce();
                     break;
 
                 case 90:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung <= 180.0 && aktuelleRichtung > 0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -394,8 +394,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case 180:
-
-
+                    //Analog zu case 0
                     while (aktuelleRichtung > 0.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -412,7 +411,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case -90:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung <= 0.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -430,50 +429,50 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
             }
         }
-
+        //Wenn Bewgungstyp 3 ist wird diese Bedingung erfuellt
         if (bewegungstyp == 3) {
 
             /*ROS_INFO("rechtsAuswahl bewegungstyp 3: %i", rechtsAuswahl);
             ROS_INFO("aktuelleRichtung: %f", aktuelleRichtung);
             ROS_INFO("Richtungsgeber: %i", Richtungsgeber);*/
 
-
+            //Falls rechtsAuswahl4 ist startet der Ablauf hier
             if (rechtsAuswahl == 4) {
-
+                //Falls der Abstand zur Wand vor dem Roboter kleiner als 0,18 wird macht er eine Notbremsung und geht zum nächsten Schritt über des Bewegungsablaufes indem rechtsAuswahl auf 1 gesetzt wird
                 if (averageVorne < 0.18) {
                     ROS_INFO("NOTSTOPPER 1!!!!!!!!!!!!!!!!!!!!!!");
                     rechtsAuswahl = 1;
-                    koordinatenVorwaerts = 0;
+                    koordinatenVorwaerts = 0;   //Weg zur Entfernungsberechnung wird zurückgesetzt
                     ros::spinOnce();
                 }
-
+                //solange die gefahrene Distanz nicht 0,12/-0,12 erreicht faehrt der Roboter geradeaus
                 while (weg < 0.12 && weg > -0.12) {
                     robot_move(GERADEAUS);
                     ros::spinOnce();
                 }
-
+                //Sobald Roboter gefahrene Distanz zurueckgelegt hat wird rechtsAuswahl auf 1 gesetzt und die Koordinaten zur Wegberechnung zurueckgesetzt
                 rechtsAuswahl = 1;
                 koordinatenVorwaerts = 0;
                 ros::spinOnce();
-
+            //Falls Rechtsauswahl 1 ist wird diese Bedingung wahr
             } else if (rechtsAuswahl == 1) {
-
+                //Richtungsgeber Switch zur aktuellen Position wegen Rechtsdrehung
                 switch (Richtungsgeber) {
 
                     case 0:
-
+                        //Solange der Roboter sich nicht um 90 Grad nach rechts gedreht hat, dreht er sich nach rechts
                         while (aktuelleRichtung > -90.0) {
                             robot_move(NEUNZIG_RECHTS);
                             ros::spinOnce();
                         }
-
+                        //sobald Roboter sich 90 Grad gedreht hat wird rechtsAuswahl auf 2 gesetzt und der Richtungsgeber auf neu gedrehte Richtung
                         rechtsAuswahl = 2;
                         Richtungsgeber = -90;
                         ros::spinOnce();
                         break;
 
                     case 90:
-
+                        //Analog zu case 0
                         while (aktuelleRichtung > 0) {
                             robot_move(NEUNZIG_RECHTS);
                             ros::spinOnce();
@@ -485,7 +484,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         break;
 
                     case 180:
-
+                        //Analog zu case 0
                         while (aktuelleRichtung > 90 || aktuelleRichtung < 0) {
                             robot_move(NEUNZIG_RECHTS);
                             ros::spinOnce();
@@ -497,7 +496,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         break;
 
                     case -90:
-
+                        //Analog zu case 0
                         while (aktuelleRichtung > -179 && aktuelleRichtung < 1) {
                             robot_move(NEUNZIG_RECHTS);
                             ros::spinOnce();
@@ -509,10 +508,10 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                         break;
 
                 }
-
+                //Falls Rechtsauswahl 1 ist wird diese Bedingung wahr
             } else if (rechtsAuswahl == 2) {
-
-                if (averageVorne < 0.18) {
+                //Falls der Abstand zur Wand vor dem Roboter kleiner als 0,18 wird macht er eine Notbremsung und rechtsAuswahl wird auf 0 gesetzt, die Koordinaten zur Wegberechnung werden ebenfalls zurueckgesetzt
+                if (averageVorne < 0.18) {  //Bewegungstyp und halter werden gesetzt um zu Puffern
                     ROS_INFO("NOTSTOPPER 2!!!!!!!!!!!!!!!!!!!!!!");
                     rechtsAuswahl = 0;
                     koordinatenVorwaerts = 0;
@@ -521,11 +520,12 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     aktualisierer = 2;
                     ros::spinOnce();
                 }
-
+                //Solange zureuckgelegte Distanz kleiner als 0,16 bzw -0,16 ist faehrt der Roboter geradeaus
                 while (weg < 0.16 && weg > -0.16) {
                     robot_move(GERADEAUS);
                     ros::spinOnce();
                 }
+                //Sobald der Roboter den weg zurueckgelegt hat werden aktualisierer und halter gesetzt als Puffer, die koordinaten werden zurueckgesetzt, bewegungstyp und rechtsAuswahl werden beide auf 0 gesetzt
                 aktualisierer = 2;
                 koordinatenVorwaerts = 0;
                 rechtsAuswahl = 0;
@@ -536,18 +536,19 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 
             }
         }
-
+        //Wenn Bewgungstyp 4 ist wird diese Bedingung erfuellt
         if (bewegungstyp == 4) {
             switch (Richtungsgeber) {
-
+                //Richtungsgeber Switch zur aktuellen Position wegen Linksdrehung
                 case 0:
 
                     //ROS_INFO("HALLO: %f", aktuelleRichtung);
-
+                    //solange die Neunzig Grad Drehung nicht abgeschlossen ist, dreht sich der Roboter nach Links
                     while (aktuelleRichtung < 90.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
                     }
+                    //Sobald Drehung abgeschlossen wird der Richtungsgeber auf 90 gesetzt und bewegungstyp auf 0, sowie countercounter auf 2
                     Richtungsgeber = 90;
                     bewegungstyp = 0;
                     countercounter = 2;
@@ -555,7 +556,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case 90:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung < 180 && aktuelleRichtung > 0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -568,7 +569,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case 180:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung > 0.0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -586,7 +587,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
                     break;
 
                 case -90:
-
+                    //Analog zu case 0
                     while (aktuelleRichtung < 0) {
                         robot_move(NEUNZIG_LINKS);
                         ros::spinOnce();
@@ -604,37 +605,41 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         //ros::spinOnce();
     }
     //ROS_INFO("Halter: %i", halter);
+    //Halter wird zur Pufferung benutzt, solange Halter groeßer als 0 ist wird ros::spinOnce() aufgerufen, sowie ein sleep
     if (halter > 0) {
         ROS_INFO("Halter: %i", halter);
         halter--;
         rateH.sleep();
         ros::spinOnce();
+        //Wenn der halter genau 0 ist, wird diese Bedingung erfuellt
     } else if (halter == 0) {
 
-
+        //Falls counter 0 ist wird diese Bedingung erfuellt
         if (counter == 0) {//Ist für den Anfang damit der Turtlebot von der mitte aus zur ersten Wand fährt
-
+            //Falls counter 0 ist wird diese Bedingung erfuellt
             if (countercounter == 0) {
+                //Solange die Wand weiter entfernt ist als 0.19 faehrt der Roboter geradeaus
                 while (averageVorne > 0.19) {
                     robot_move(GERADEAUS);
                     ros::spinOnce();
                 }
+                //sobald der Abstand zur Wand davor kleiner gleich 0.19 ist wird der countercounter auf 1 gesetzt
                 if (averageVorne <= 0.19) {
                     countercounter = 1;
                 }
             }
-
+            //nachdem der countercounter 1 ist, wird nun der Bewegungstyp auf 4 gesetzt (und somit die Anfahrt an die erste Wand abgeschlossen indem Linksdrehung begonnen wird)
             if (countercounter == 1) {
                 bewegungstyp = 4;
                 ros::spinOnce();
             }
-
+            //wenn countercounter 2 ist, wird der counter auf 1 gesetzt
             if (countercounter == 2) {
                 counter = 1;
                 ros::spinOnce();
             }
 
-
+            //Wenn der counter 1 ist wird diese Bedingung erfuellt
         } else if (counter == 1) {                             //ab hier an kann der Turtlebot sich orientieren
             if (bewegungstyp == 0) {
                 ROS_INFO("ZEILE 636");
