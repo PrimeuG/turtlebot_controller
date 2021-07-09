@@ -640,141 +640,146 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
             }
 
             //Wenn der counter 1 ist wird diese Bedingung erfuellt
-        } else if (counter == 1) {                             //ab hier an kann der Turtlebot sich orientieren
-            if (bewegungstyp == 0) {
-                ROS_INFO("ZEILE 636");
-                ROS_INFO("averageRechts: %f", averageRechts);
-                ROS_INFO("averageLinks: %f", averageLinks);
-                ROS_INFO("averageVorne: %f", averageVorne);
+            } else if (counter == 1) {
+                //ab hier an kann der Turtlebot sich orientieren
+                if (bewegungstyp == 0) { //Falls bewegungstyp 0 ist, werden hier Kontrollausgaben der Distanzen gemacht
+                    ROS_INFO("averageRechts: %f", averageRechts);
+                    ROS_INFO("averageLinks: %f", averageLinks);
+                    ROS_INFO("averageVorne: %f", averageVorne);
 
-                if (averageRechts <=
-                    0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
-                    ROS_INFO("RECHTS KLEINER ALS 0.275");
-                    if (averageVorne <= 0.2) {    //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
-                        ROS_INFO("VORNE KLEINER ALS 0.2");
-                        if (averageLinks <=
-                            0.25) {   //Kommentar aus Zeile davor + noch eine Wand dicht auf der Linken Seite
-                            ROS_INFO("LINKS KLEINER ALS 0.25");
-                            //ROS_INFO("Erster Switch");
+                    if (averageRechts <=
+                        0.275) {     //Turtlebot hat rechts neben sich eine Wand und kann somit den Rechte-Hand Algorythmus durchführen
+                        ROS_INFO("RECHTS KLEINER ALS 0.275");
+                        if (averageVorne <= 0.2) {    //Turtlebot hat eine Wand vor sich und eine Wand rechts neben sich
+                            ROS_INFO("VORNE KLEINER ALS 0.2");
+                            if (averageLinks <=
+                                0.25) {   //Kommentar aus Zeile davor + noch eine Wand dicht auf der Linken Seite
+                                ROS_INFO("LINKS KLEINER ALS 0.25");
+                                //ROS_INFO("Erster Switch");
+                                //Richtungsgeber wird zur Orientierung genutzt um aktuelle Position des Turtlebot zu bestimmen, theoretisch nicht notwendig, zu besseren verstaendlichkeit drin gelassen
+                                switch (Richtungsgeber) {
 
-                            switch (Richtungsgeber) {
+                                    case 0:
+                                        //Bewegungstyp wird auf 2 gesetzt
+                                        bewegungstyp = 2;
+                                        ros::spinOnce();
+                                        break;
 
-                                case 0:
+                                    case 90:
+                                        //Bewegungstyp wird auf 2 gesetzt
+                                        bewegungstyp = 2;
+                                        ros::spinOnce();
+                                        break;
 
-                                    bewegungstyp = 2;
-                                    ros::spinOnce();
-                                    break;
+                                    case 180:
+                                        //Bewegungstyp wird auf 2 gesetzt
+                                        bewegungstyp = 2;
+                                        ros::spinOnce();
+                                        break;
 
-                                case 90:
+                                    case -90:
+                                        //Bewegungstyp wird auf 2 gesetzt
+                                        bewegungstyp = 2;
+                                        ros::spinOnce();
+                                        break;
 
-                                    bewegungstyp = 2;
-                                    ros::spinOnce();
-                                    break;
+                                }  //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
 
-                                case 180:
+                            } else {   //Links hat der Turtlebot keine Wand
+                                ROS_INFO("LINKS GROESSER ALS 0.25");
+                                ROS_INFO("Zweiter Switch");
+                                //Richtungsgeber wird zur Orientierung genutzt um aktuelle Position des Turtlebot zu bestimmen, theoretisch nicht notwendig, zu besseren verstaendlichkeit drin gelassen
+                                switch (Richtungsgeber) {
 
-                                    bewegungstyp = 2;
-                                    ros::spinOnce();
-                                    break;
+                                    case 0:
+                                        //Bewegungstyp wird auf 1 gesetzt
+                                        bewegungstyp = 1;
+                                        ros::spinOnce();
+                                        break;
 
-                                case -90:
+                                    case 90:
+                                        //Bewegungstyp wird auf 1 gesetzt
+                                        bewegungstyp = 1;
+                                        ros::spinOnce();
+                                        break;
 
-                                    bewegungstyp = 2;
-                                    ros::spinOnce();
-                                    break;
+                                    case 180:
+                                        //Bewegungstyp wird auf 1 gesetzt
+                                        bewegungstyp = 1;
+                                        ros::spinOnce();
+                                        break;
 
-                            }  //180° Linksdrehung da der Turtlebot in einer Sackgasse ist
+                                    case -90:
+                                        //Bewegungstyp wird auf 1 gesetzt
+                                        bewegungstyp = 1;
+                                        ros::spinOnce();
+                                        break;
 
-                        } else {   //Links hat der Turtlebot keine Wand
-                            ROS_INFO("LINKS GROESSER ALS 0.25");
-                            ROS_INFO("Zweiter Switch");
-
-                            switch (Richtungsgeber) {
-
-                                case 0:
-
-                                    bewegungstyp = 1;
-                                    ros::spinOnce();
-                                    break;
-
-                                case 90:
-
-                                    bewegungstyp = 1;
-                                    ros::spinOnce();
-                                    break;
-
-                                case 180:
-
-                                    bewegungstyp = 1;
-                                    ros::spinOnce();
-                                    break;
-
-                                case -90:
-
-                                    bewegungstyp = 1;
-                                    ros::spinOnce();
-                                    break;
-
-                            }                                 //Linksdrehung um 90°
-                        }
-
-                    } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
-                        ROS_INFO("VORNE GROESSER ALS 0.2");
-                        robot_move(GERADEAUS);
-                        ros::spinOnce();
-
-                    }
-
-                } else {
-                    if (aktualisierer > 0) {
-                        aktualisierer--;
-                        ROS_INFO("aktualisierer MINUS");
-                        ros::spinOnce();
-                    } else if (aktualisierer == 0) {
-
-                        ROS_INFO("RECHTS GROESSER ALS 0.275");
-                        //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
-
-                        if (rechtsAuswahl != 0) {
-                            ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
-                        }
-
-                        if (averageVorne <= 0.2) {  //Keine Wand rechts neben sich, aber vor sich
-                            ROS_INFO("RECHTSDREHUNG DANN GERADE");
-                            if (rechtsAuswahl == 0) {
-                                rechtsAuswahl = 1;
-                                bewegungstyp = 3;
-                                ros::spinOnce();
+                                }                                 //Linksdrehung um 90°
                             }
 
-                        } else if (averageVorne >
-                                   0.2) {    //Turtlebot faehrt vorwaerts dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                        } else {                              //Turtlebot hat keine Wand vor sich aber rechts neben sich, daher kann er geradeaus fahren
+                            ROS_INFO("VORNE GROESSER ALS 0.2");
+                            robot_move(GERADEAUS);
+                            ros::spinOnce();
 
+                        }
+
+                    } else {
+                        //Falls aktualisierer groeßer 0 wird der dekrementiert um 1 und es wird ros::spinOnce() aufgerufen um als Puffer zu dienen
+                        if (aktualisierer > 0) {
+                            aktualisierer--;
+                            ROS_INFO("aktualisierer MINUS");
+                            ros::spinOnce();
+
+                            //Sobald aktualisierer 0 ist wird diese Bedinung erfuellt
+                        } else if (aktualisierer == 0) {
+
+                            ROS_INFO("RECHTS GROESSER ALS 0.275");
+                            //Turtlebot hat keine Wand rechts neben sich daher ein Gang oder eine Tür
+                            //Zur Ausgabe falls rechtsAuswahl nicht 0 ist
                             if (rechtsAuswahl != 0) {
                                 ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
                             }
-                            ROS_INFO("GERADE, RECHTSDREHUNG DANN GERADE");
-                            if (rechtsAuswahl == 0) {
-                                rechtsAuswahl = 4;
-                                bewegungstyp = 3;
-                                ros::spinOnce();
-                            }
 
+                            if (averageVorne <= 0.2) {  //Keine Wand rechts neben sich, aber vor sich
+                                ROS_INFO("RECHTSDREHUNG DANN GERADE");
+                                if (rechtsAuswahl == 0) {
+                                    //Setzt rechtsauswahl auf 1 und bewegungsytp auf 3
+                                    rechtsAuswahl = 1;
+                                    bewegungstyp = 3;
+                                    ros::spinOnce();
+                                }
+
+                            } else if (averageVorne >
+                                       0.2) {    //Turtlebot faehrt vorwaerts dreht sich 90° nach rechts und bewegt sich ein Stück nach vorne
+                                //Zur Ausgabe falls rechtsAuswahl nicht 0 ist
+                                if (rechtsAuswahl != 0) {
+                                    ROS_INFO("Rechtsauswahl ist nicht null ! sondern: %i", rechtsAuswahl);
+                                }
+                                ROS_INFO("GERADE, RECHTSDREHUNG DANN GERADE");
+                                if (rechtsAuswahl == 0) {
+                                    //Setzt rechtsAuswahl auf 4 und bewegungsytp auf 3
+                                    rechtsAuswahl = 4;
+                                    bewegungstyp = 3;
+                                    ros::spinOnce();
+                                }
+
+                            }
                         }
                     }
-                }
-            } //else ros::spinOnce();
-        }
+                } //else ros::spinOnce();
+            }
     }
 }
 
 
 void odomCallback(const nav_msgs::Odometry::ConstPtr &msg) {
-
+    //Setzt die Variablen tx, ty und tz auf die aktuellen Positionen
     double tx = msg->pose.pose.position.x;
     double ty = msg->pose.pose.position.y;
     double tz = msg->pose.pose.position.z;
-
+    //Solange koordinatenVorwaerts 0 ist, wird der Wert staendig aktualisiert, dienen als Ausgangspunkte zur Wegberechnung, sobald nicht mehr 0 sind diese die Anfangskoordinaten zur Berechnung
     if (koordinatenVorwaerts == 0) {
         y_fest = (msg->pose.pose.position.y);
 
